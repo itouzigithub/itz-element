@@ -1,0 +1,33 @@
+{
+  "name": "itz-element",
+  "version": "1.0.0",
+  "description": "itouzi dashboard ui base on element",
+  "main": "lib/itz-dashboard-ui.common.js",
+  "files": [
+    "lib",
+    "src",
+    "packages"
+  ],
+  "private": true,
+  "keywords": [],
+  "scripts": {
+    "dev": "cooking watch -c build/cooking.demo.js -p",
+    "dist": "cooking build -c build/cooking.common.js -p",
+    "deploy": "cooking build --no-color",
+    "test": "cooking test karma start --single-run"
+  },
+  "author": "itouziFE",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "*",
+    "element-ui": "^1.0.0-rc.6",
+    "vue": "^2.0.1",
+    "vue-resource": "^1.0.3"
+  },
+  "devDependencies": {
+    "cooking-buble": "*",
+    "cooking-vue2": "*",
+    "element-ui": "^1.0.0-rc.6",
+    "vue-resource": "^1.0.3"
+  }
+}
