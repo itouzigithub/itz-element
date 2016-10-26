@@ -1,0 +1,17 @@
+{
+  "name": "mydemo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "app": "supervisor app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "cl",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "supervisor": "^0.11.0"
+  }
+}

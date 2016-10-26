@@ -18,7 +18,16 @@
       >
       <slot></slot>
     </el-table>
-    <slot name="pagenation"></slot>
+    <el-pagination
+      v-if="onePage"
+      @sizechange="handleSizeChange"
+      @currentchange="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="tableDataTotal">
+    </el-pagination>
   </div>
 </template>
 
@@ -82,7 +91,20 @@
       },
 
       customCriteria: Array,
-      customBackgroundColors: Array
+      customBackgroundColors: Array,
+
+      currentPage: {
+        type: Number,
+        default: 1
+      },
+      pageSize: {
+        type: Number,
+        default: 10
+      },
+      pageSizes: {
+        type: Array,
+        default: [10, 20, 30, 50]
+      }
     },
 
     components: {
@@ -91,24 +113,49 @@
 
     data() {
       return {
-        tableData:this.data
+        tableData: [],
+        tableDataTotal: 0,
+        _shadow_pageSize: 10,
+        _shadow_currentPage: 1
       }
     },
 
     mounted: function() {
+      this._shadow_pageSize = this.pageSize;
+      this._shadow_currentPage = this.currentPage;
       this.getDataRemote();
     },
 
     methods: {
       getDataRemote: function() {
         if (this.actionQuery) {
-          this.$http.get(this.actionQuery)
+          let url = this.actionQuery + '?page=' + this._shadow_currentPage + '&size=' + this._shadow_pageSize
+          this.$http.get(url)
             .then((res) => {
-                this.tableData = res.data.list;
+              if (res.status !== 200 || res.body.code !== 0) {
+                console.error(res)
+              } else {
+                this.tableData = res.body.data.list;
+                this.tableDataTotal = res.body.data.listTotal;
+              }
             }, (res) => {
-
+              console.error(res)
             });
         }
+      },
+      handleSizeChange: function(newVal) {
+        this._shadow_pageSize = newVal
+        this.getDataRemote();
+      },
+      handleCurrentChange: function(newVal) {
+        this._shadow_currentPage = newVal
+        this.getDataRemote();
+      }
+    },
+
+    computed: {
+      onePage: function() {
+        return this.tableDataTotal > this._shadow_pageSize
       }
     }
   };
