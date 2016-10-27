@@ -5,9 +5,13 @@
         <itz-table
             action-query="http://localhost:8888/list"
             border
-            v-bind:page-size="10"
-            v-bind:page-sizes="[10, 20, 30, 50]"
-            v-bind:current-page="1"
+            :page-size="10"
+            :page-sizes="[10, 20, 30, 50]"
+            :current-page="1"
+            pagerPosition="center"
+            selectionMode="single"
+            height="456"
+            :searchField="['name', 'borrowtype']"
         >
             <el-table-column
                 type="index"

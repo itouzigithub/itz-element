@@ -14,12 +14,34 @@ var list = require('./table.data.json')
 
 app.get('/list', function(req,res,next) {
     console.log(req.query)
+    var result = JSON.parse(JSON.stringify(list))
+    if (req.query.name) {
+        result = result.filter(function(item) {
+            return item.name.match(req.query.name)
+        })
+    }
+    if (req.query.type) {
+        result = result.filter(function(item) {
+            return item.type.match(req.query.type)
+        })
+    }
+    if (req.query.borrowtype) {
+        result = result.filter(function(item) {
+            return item.borrowtype.match(req.query.borrowtype)
+        })
+    }
+    if (req.query.enterprise) {
+        result = result.filter(function(item) {
+            return item.enterprise.match(req.query.enterprise)
+        })
+    }
+    console.log(result)
     res.json({
         code:0,
         info:"ok",
         data: {
-            listTotal: list.length,
-            list: list.slice((+req.query.page-1) * +req.query.size).slice(0, +req.query.size)
+            listTotal: result.length,
+            list: result.slice((+req.query.page-1) * +req.query.size).slice(0, +req.query.size)
         }
     });
 })
