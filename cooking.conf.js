@@ -3,10 +3,10 @@ var cooking = require('cooking');
 
 cooking.set({
   entry: {
-    app: ['babel-polyfill', './src/main.js']
+    app: ['babel-polyfill', './examples/entry.js']
   },
   dist: './dist',
-  template: './index.tpl',
+  template: './examples/index.tpl',
 
   devServer: {
     port: 8081,

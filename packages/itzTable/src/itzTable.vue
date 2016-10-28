@@ -46,31 +46,30 @@
 </template>
 
 <script type="text/babel">
+  import Eltable from 'element-ui/lib/table';
+  import Elrow from 'element-ui/lib/row';
+  import Elcol from 'element-ui/lib/col';
+  import Elform from 'element-ui/lib/form';
+  import ElFormItem from 'element-ui/lib/form-item';
+  import Elinput from 'element-ui/lib/input';
+  import Elbutton from 'element-ui/lib/button';
 
-  import Eltable from 'element-ui/lib/table'
-  import Elrow from 'element-ui/lib/row'
-  import Elcol from 'element-ui/lib/col'
-  import Elform from 'element-ui/lib/form'
-  import ElFormItem from 'element-ui/lib/form-item'
-  import Elinput from 'element-ui/lib/input'
-  import Elbutton from 'element-ui/lib/button'
-  
   export default {
     name: 'itz-table',
 
     props: {
-      queryUrl:{
-        type:String,
-        default:''
+      queryUrl: {
+        type: String,
+        default: ''
       },
-      deleteUrl:{
-        type:String,
-        default:''
+      deleteUrl: {
+        type: String,
+        default: ''
       },
       data: {
         type: Array,
         default() {
-          return []
+          return [];
         }
       },
 
@@ -163,25 +162,25 @@
           size: 10,
           page: 1
         }
-      }
+      };
     },
 
     mounted() {
-      this.queryParams.size = this.pageSize
-      this.queryParams.page = this.currentPage
-      this.getDataRemote()
-      this.$on('onSearch', this.onSearch)
-      this.$on('onDelete', this.onDelete)
+      this.queryParams.size = this.pageSize;
+      this.queryParams.page = this.currentPage;
+      this.getDataRemote();
+      this.$on('onSearch', this.onSearch);
+      this.$on('onDelete', this.onDelete);
     },
 
     methods: {
       getDataRemote() {
         if (this.queryUrl) {
-          this.loading = true
-          let url = this.buildUrl()
+          this.loading = true;
+          let url = this.buildUrl();
           this.$http.get(url)
             .then((res) => {
-              this.loading = false
+              this.loading = false;
               if (res.status !== 200 || res.body.code !== 0) {
                 this.$notify.error({
                   title: 'Ooooooops',
@@ -198,38 +197,40 @@
                 }
               }
             }, (res) => {
-              this.loading = false
+              this.loading = false;
               this.$notify.error({
                 title: 'Ooooooops',
                 message: '服务器题了一个问题，正在寻找答案...'
               });
-            })
+            });
         }
       },
       handleSizeChange(newVal) {
-        this.queryParams.page = 1
-        this.queryParams.size = newVal
-        this.getDataRemote()
+        this.queryParams.page = 1;
+        this.queryParams.size = newVal;
+        this.getDataRemote();
       },
       handleCurrentChange(newVal) {
-        this.queryParams.page = newVal
-        this.getDataRemote()
+        this.queryParams.page = newVal;
+        this.getDataRemote();
       },
       handleSelectRow(val) {
-        this.rowSelected = val
+        this.rowSelected = val;
       },
       onSearch() {
-        console.debug('clicked:onSearch', this.searchObject)
-        this.getDataRemote()
+        console.debug('clicked:onSearch', this.searchObject);
+        this.getDataRemote();
       },
       onDelete() {
-        var params = []
+        var params = [];
         this.rowSelected.map((row) => {
-          params.push(row.id)
-        })
-        console.debug('clicked:onDelete', params)
+          params.push(row.id);
+        });
+        console.debug('clicked:onDelete', params);
         if (this.deleteUrl) {
-          this.$http.post(this.deleteUrl, {"ids": params}).then((res) => {
+          this.$http.post(this.deleteUrl, {
+            'ids': params
+          }).then((res) => {
             if (res.status !== 200 || res.body.code !== 0) {
               this.$notify.error({
                 title: 'Ooooooops',
@@ -240,39 +241,42 @@
                 title: 'Success',
                 message: '删除成功'
               });
-              this.queryParams.page = 1
-              this.getDataRemote()
+              this.queryParams.page = 1;
+              this.getDataRemote();
             }
           }, (res) => {
-            this.loading = false
+            this.loading = false;
             this.$notify.error({
               title: 'Ooooooops',
               message: '服务器题了一个问题，正在寻找答案...'
             });
-          })
+          });
         }
       },
       buildUrl() {
-        return this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
+        return this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject));
       },
       serialize(obj, prefix) {
         if (obj) {
           var str = [];
-          for(var p in obj) {
+          for (var p in obj) {
             if (obj.hasOwnProperty(p)) {
-              var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+              var k = prefix ? prefix + '[' + p + ']' : p;
+              var v = obj[p];
               str.push(
-                typeof v == "object" ?
-                this.serialize(v, k) :
-                encodeURIComponent(k) + "=" + encodeURIComponent((
-                  v == 'null' || v == 'undefined' || v == undefined
-                ) ? '' : v)
+                typeof v === 'object'
+                ? this.serialize(v, k)
+                : encodeURIComponent(k) + '=' + encodeURIComponent(
+                  (v === 'null' || v === 'undefined' || v === undefined)
+                  ? ''
+                  : v
+                )
               );
             }
-          }
-          return str.join("&");
+          };
+          return str.join('&');
         } else {
-          return ''
+          return '';
         }
       }
     },
@@ -280,15 +284,15 @@
     computed: {
       tablePlaceholderStyle() {
         if (!this.tableDataTotal || this.loading) {
-          this.tableHeight = 0
+          this.tableHeight = 0;
           return {
             height: this.height + 'px'
-          }
+          };
         } else {
-          this.tableHeight = this.height
+          this.tableHeight = this.height;
           return {
             height: '0px'
-          }
+          };
         }
       }
     }
