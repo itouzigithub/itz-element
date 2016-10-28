@@ -20,7 +20,13 @@
       :gutterWidth="gutterWidth"
       :customCriteria="customCriteria"
       :customBackgroundColors="customBackgroundColors"
+      @selectionchange="handleSelectRow"
       ref="elTable">
+      <el-table-column
+        v-if="selectionMode=='multiple'"
+        type="selection"
+        width="50">
+      </el-table-column>
       <slot></slot>
     </el-table>
     <div :style="tablePlaceholderStyle" class="table-loading" v-loading="loading"></div>
@@ -54,7 +60,11 @@
     name: 'itz-table',
 
     props: {
-      actionQuery:{
+      queryUrl:{
+        type:String,
+        default:''
+      },
+      deleteUrl:{
         type:String,
         default:''
       },
@@ -149,6 +159,7 @@
         tableHeight: 0,
         tableData: [],
         tableDataTotal: 0,
+        rowSelected: [],
         queryParams: {
           size: 10,
           page: 1
@@ -157,15 +168,18 @@
     },
 
     mounted() {
+      this.queryParams.size = this.pageSize
+      this.queryParams.page = this.currentPage
       this.getDataRemote()
       this.$on('onSearch', this.onSearch)
+      this.$on('onDelete', this.onDelete)
     },
 
     methods: {
       getDataRemote() {
-        if (this.actionQuery) {
+        if (this.queryUrl) {
           this.loading = true
-          let url = this.actionQuery + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
+          let url = this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
           this.$http.get(url)
             .then((res) => {
               this.loading = false
@@ -202,9 +216,41 @@
         this.queryParams.page = newVal
         this.getDataRemote()
       },
+      handleSelectRow(val) {
+        this.rowSelected = val
+      },
       onSearch() {
         console.debug('clicked:onSearch', this.searchObject)
         this.getDataRemote()
+      },
+      onDelete() {
+        var params = []
+        this.rowSelected.map((row) => {
+          params.push(row.id)
+        })
+        console.debug('clicked:onDelete', params)
+        if (this.deleteUrl) {
+          this.$http.post(this.deleteUrl, {"ids": params}).then((res) => {
+            if (res.status !== 200 || res.body.code !== 0) {
+              this.$notify.error({
+                title: 'Ooooooops',
+                message: '服务器题了一个问题，正在寻找答案...'
+              });
+            } else {
+              this.$notify.success({
+                title: 'Success',
+                message: '删除成功'
+              });
+              this.getDataRemote()
+            }
+          }, (res) => {
+            this.loading = false
+            this.$notify.error({
+              title: 'Ooooooops',
+              message: '服务器题了一个问题，正在寻找答案...'
+            });
+          })
+        }
       },
       serialize(obj, prefix) {
         if (obj) {

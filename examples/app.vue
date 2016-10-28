@@ -3,14 +3,15 @@
         <h1>itz-element</h1>
         <p>A vue project.</p>
         <itz-table
-            action-query="http://localhost:8888/list"
+            query-url="http://localhost:8888/list"
+            delete-url="http://localhost:8888/list/delete"
             border
-            :page-size="10"
-            :page-sizes="[10, 20, 30, 50]"
+            :page-size="5"
+            :page-sizes="[5, 10, 20, 30, 50]"
             :current-page="1"
             pagerPosition="center"
-            selectionMode="single"
-            height="456"
+            selectionMode="multiple"
+            height="250"
             :searchObject="searchObject"
             ref="myTable"
         >
@@ -31,9 +32,10 @@
             <div slot="buttons">
                 <el-form-item>
                     <el-button type="primary" @click.native.prevent="onSearch">查询</el-button>
-                    <el-button type="primary" @click.native.prevent="openInsertDialog">新增</el-button>
-                    <el-button type="primary" @click.native.prevent="openEditDialog">修改</el-button>
+                    <el-button type="success" @click.native.prevent="openInsertDialog">新增</el-button>
+                    <el-button type="warning" @click.native.prevent="openEditDialog">修改</el-button>
                     <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
+                    <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
                 </el-form-item>
             </div>
             <el-table-column
@@ -92,6 +94,10 @@
             onSearch() {
                 console.debug('onSearch:emit')
                 this.$refs.myTable.$emit('onSearch', true)
+            },
+            onDelete() {
+                console.debug('onDelete:emit')
+                this.$refs.myTable.$emit('onDelete', true)
             },
             openInsertDialog() {
                 console.debug('openInsertDialog:clicked')
