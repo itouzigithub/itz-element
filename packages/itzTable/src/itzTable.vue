@@ -33,7 +33,6 @@
     <el-row type="flex" class="row-bg" :justify="pagerPosition">
       <el-pagination
         class="itz-table-el-pagination"
-        v-if="onePage"
         @sizechange="handleSizeChange"
         @currentchange="handleCurrentChange"
         :current-page="queryParams.page"
@@ -179,7 +178,7 @@
       getDataRemote() {
         if (this.queryUrl) {
           this.loading = true
-          let url = this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
+          let url = this.buildUrl()
           this.$http.get(url)
             .then((res) => {
               this.loading = false
@@ -241,6 +240,7 @@
                 title: 'Success',
                 message: '删除成功'
               });
+              this.queryParams.page = 1
               this.getDataRemote()
             }
           }, (res) => {
@@ -251,6 +251,9 @@
             });
           })
         }
+      },
+      buildUrl() {
+        return this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
       },
       serialize(obj, prefix) {
         if (obj) {
@@ -275,9 +278,6 @@
     },
 
     computed: {
-      onePage() {
-        return this.tableDataTotal > this.queryParams.size
-      },
       tablePlaceholderStyle() {
         if (!this.tableDataTotal || this.loading) {
           this.tableHeight = 0

@@ -9,7 +9,7 @@
             :page-size="5"
             :page-sizes="[5, 10, 20, 30, 50]"
             :current-page="1"
-            pagerPosition="center"
+            pagerPosition="start"
             selectionMode="multiple"
             height="250"
             :searchObject="searchObject"
