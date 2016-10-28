@@ -35,15 +35,17 @@ app.get('/list', function(req,res,next) {
             return item.enterprise.match(req.query.enterprise)
         })
     }
-    console.log(result)
-    res.json({
-        code:0,
-        info:"ok",
-        data: {
-            listTotal: result.length,
-            list: result.slice((+req.query.page-1) * +req.query.size).slice(0, +req.query.size)
-        }
-    });
+    // console.log(result)
+    setTimeout(function() {
+        res.json({
+            code:0,
+            info:"ok",
+            data: {
+                listTotal: result.length,
+                list: result.slice((+req.query.page-1) * +req.query.size).slice(0, +req.query.size)
+            }
+        });
+    }, 1000)
 })
 app.post('/save', function(req,res,next) {
     var item = req.body;

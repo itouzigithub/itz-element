@@ -1,28 +1,15 @@
 <template>
   <div class="itz-table">
-    <el-row type="flex" justify="space-between" :gutter="1" class="itz-table-options" ref="itzTableOptions">
-      <el-col :span="20">
-        <el-form :inline="true" @submit.prevent="onSearch">
-          <el-form-item v-for="(label, key) in search">
-            <el-input v-model="search[key].value" :placeholder="label.label"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click.native.prevent="onSearch">查询</el-button>
-          </el-form-item>
+    <el-row>
+        <el-form :inline="true">
+          <slot name="searchs"></slot>
+          <slot name="buttons"></slot>
         </el-form>
-      </el-col>
-      <el-col :span="4">
-        <el-row type="flex" :gutter="10" justify="end">
-          <el-col :span="7"><el-button type="primary" @click.native.prevent="openInsertDialog">新增</el-button></el-col>
-          <el-col :span="7"><el-button type="primary" @click.native.prevent="openEditDialog">修改</el-button></el-col>
-          <el-col :span="7"><el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button></el-col>
-        </el-row>
-      </el-col>
     </el-row>
     <el-table
       :data="tableData"
       :width="width"
-      :height="height"
+      :height="tableHeight"
       :fit="fit"
       :stripe="stripe"
       :border="border"
@@ -33,19 +20,19 @@
       :gutterWidth="gutterWidth"
       :customCriteria="customCriteria"
       :customBackgroundColors="customBackgroundColors"
-      ref="elTable"
-    >
+      ref="elTable">
       <slot></slot>
     </el-table>
+    <div :style="tablePlaceholderStyle" class="table-loading" v-loading="loading"></div>
     <el-row type="flex" class="row-bg" :justify="pagerPosition">
       <el-pagination
         class="itz-table-el-pagination"
         v-if="onePage"
         @sizechange="handleSizeChange"
         @currentchange="handleCurrentChange"
-        :current-page="_shadow_currentPage"
+        :current-page="queryParams.page"
         :page-sizes="pageSizes"
-        :page-size="_shadow_pageSize"
+        :page-size="queryParams.size"
         layout="total, sizes, prev, pager, next, jumper"
         :total="tableDataTotal">
       </el-pagination>
@@ -63,7 +50,6 @@
   import Elinput from 'element-ui/lib/input'
   import Elbutton from 'element-ui/lib/button'
   
-
   export default {
     name: 'itz-table',
 
@@ -74,7 +60,7 @@
       },
       data: {
         type: Array,
-        default: function() {
+        default() {
           return []
         }
       },
@@ -141,103 +127,86 @@
         type: String,
         default: 'end'
       },
-      searchField: [String, Array]
+      searchObject: {
+        type: Object,
+        default: {}
+      }
     },
 
     components: {
       Eltable,
-      Elrow
+      Elrow,
+      Elcol,
+      Elform,
+      ElFormItem,
+      Elinput,
+      Elbutton
     },
 
     data() {
       return {
+        loading: false,
+        tableHeight: 0,
         tableData: [],
         tableDataTotal: 0,
-        _shadow_pageSize: 10,
-        _shadow_currentPage: 1,
-        search: {}
+        queryParams: {
+          size: 10,
+          page: 1
+        }
       }
     },
 
-    mounted: function() {
-      let elTableFields = {}
-      this.$refs.elTable.columns.map((field) => {
-        if (field.property) {
-          elTableFields[field.property] = field.label
-        }
-      })
-      let elTableFieldsKeys = Object.keys(elTableFields)
-      console.debug(elTableFields)
-      if (this.searchField instanceof Array) {
-        this.searchField.map((field) => {
-          if (elTableFieldsKeys.indexOf(field) !== -1) {
-            this.search[field] = {
-              value: '',
-              label: elTableFields[field]
-            }
-          }
-        })
-      } else {
-        if (elTableFieldsKeys.indexOf(this.searchField) !== -1) {
-          this.search[this.searchField] = {
-            value: '',
-            label: elTableFields[this.searchField]
-          }
-        }
-      }
-      console.debug(this.search)
-      this._shadow_pageSize = this.pageSize
-      this._shadow_currentPage = this.currentPage
+    mounted() {
       this.getDataRemote()
+      this.$on('onSearch', this.onSearch)
     },
 
     methods: {
-      getDataRemote: function(url) {
+      getDataRemote() {
         if (this.actionQuery) {
-          if (!url) {
-            var url = this.actionQuery + '?page=' + this._shadow_currentPage + '&size=' + this._shadow_pageSize
-          }
+          this.loading = true
+          let url = this.actionQuery + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject))
           this.$http.get(url)
             .then((res) => {
+              this.loading = false
               if (res.status !== 200 || res.body.code !== 0) {
-                console.error(res)
+                this.$notify.error({
+                  title: 'Ooooooops',
+                  message: '服务器题了一个问题，正在寻找答案...'
+                });
               } else {
                 this.tableData = res.body.data.list;
                 this.tableDataTotal = res.body.data.listTotal;
+                if (this.tableDataTotal === 0) {
+                  this.$notify.info({
+                    title: 'Notication',
+                    message: '没有符合条件的数据...'
+                  });
+                }
               }
             }, (res) => {
-              console.error(res)
+              this.loading = false
+              this.$notify.error({
+                title: 'Ooooooops',
+                message: '服务器题了一个问题，正在寻找答案...'
+              });
             })
         }
       },
-      handleSizeChange: function(newVal) {
-        this._shadow_currentPage = 1
-        this._shadow_pageSize = newVal
+      handleSizeChange(newVal) {
+        this.queryParams.page = 1
+        this.queryParams.size = newVal
         this.getDataRemote()
       },
-      handleCurrentChange: function(newVal) {
-        this._shadow_currentPage = newVal
+      handleCurrentChange(newVal) {
+        this.queryParams.page = newVal
         this.getDataRemote()
       },
-      onSearch: function() {
-        console.debug('clicked:onSearch', this.search)
-        var _search = {}
-        Object.keys(this.search).map((key) => {
-          _search[key] = this.search[key].value
-        })
-        let url = this.actionQuery + '?page=1&size=' + this._shadow_pageSize + '&' + this.serialize(_search)
-        this.getDataRemote(url)
+      onSearch() {
+        console.debug('clicked:onSearch', this.searchObject)
+        this.getDataRemote()
       },
-      openInsertDialog: function() {
-        console.debug('clicked:openInsertDialog')
-      },
-      openEditDialog: function() {
-        console.debug('clicked:openEditDialog')
-      },
-      openViewDialog: function() {
-        console.debug('clicked:openViewDialog')
-      },
-      serialize: function (obj, prefix) {
+      serialize(obj, prefix) {
         if (obj) {
           var str = [];
           for(var p in obj) {
@@ -245,8 +214,10 @@
               var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
               str.push(
                 typeof v == "object" ?
-                serialize(v, k) :
-                encodeURIComponent(k) + "=" + encodeURIComponent(v)
+                this.serialize(v, k) :
+                encodeURIComponent(k) + "=" + encodeURIComponent((
+                  v == 'null' || v == 'undefined' || v == undefined
+                ) ? '' : v)
               );
             }
           }
@@ -258,8 +229,21 @@
     },
 
     computed: {
-      onePage: function() {
-        return this.tableDataTotal > this._shadow_pageSize
+      onePage() {
+        return this.tableDataTotal > this.queryParams.size
+      },
+      tablePlaceholderStyle() {
+        if (!this.tableDataTotal || this.loading) {
+          this.tableHeight = 0
+          return {
+            height: this.height + 'px'
+          }
+        } else {
+          this.tableHeight = this.height
+          return {
+            height: '0px'
+          }
+        }
       }
     }
   };
