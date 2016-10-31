@@ -156,7 +156,7 @@
         tableDataTotal: 0,
         rowSelected: [],
         queryParams: {
-          size: 10,
+          limit: 10,
           page: 1
         },
         lastRequest: null
@@ -165,7 +165,7 @@
 
     beforeMount() {
       console.debug('beforeMounted');
-      this.queryParams.size = this.pageSize;
+      this.queryParams.limit = this.pageSize;
       this.queryParams.page = this.currentPage;
     },
 
@@ -193,15 +193,15 @@
               this.loading = false;
               if (res.status !== 200 || res.body.code !== 0) {
                 this.$notify.error({
-                  title: 'Ooooooops',
+                  title: '错误',
                   message: '服务器题了一个问题，正在寻找答案...'
                 });
               } else {
-                this.tableData = res.body.data.list;
+                this.tableData = res.body.data.listInfo;
                 this.tableDataTotal = res.body.data.listTotal;
                 if (this.tableDataTotal === 0) {
                   this.$notify.info({
-                    title: 'Notication',
+                    title: '警告',
                     message: '没有符合条件的数据...'
                   });
                 }
@@ -209,7 +209,7 @@
             }, (res) => {
               this.loading = false;
               this.$notify.error({
-                title: 'Ooooooops',
+                title: '错误',
                 message: '服务器题了一个问题，正在寻找答案...'
               });
             });
@@ -218,7 +218,7 @@
       handleSizeChange(newVal) {
         console.debug('clicked:handleSizeChange', newVal);
         this.queryParams.page = 1;
-        this.queryParams.size = newVal;
+        this.queryParams.limit = newVal;
         this.getDataRemote();
       },
       handleCurrentChange(newVal) {
@@ -256,13 +256,13 @@
           }).then((res) => {
             if (res.status !== 200 || res.body.code !== 0) {
               this.$notify.error({
-                title: 'Ooooooops',
+                title: '错误',
                 message: '服务器题了一个问题，正在寻找答案...'
               });
             } else {
               this.$notify.success({
-                title: 'Success',
-                message: '删除成功'
+                title: '成功',
+                message: '已删除'
               });
               this.queryParams.page = 1;
               this.getDataRemote();
@@ -270,7 +270,7 @@
           }, (res) => {
             this.loading = false;
             this.$notify.error({
-              title: 'Ooooooops',
+              title: '错误',
               message: '服务器题了一个问题，正在寻找答案...'
             });
           });
