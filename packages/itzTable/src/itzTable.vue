@@ -29,7 +29,7 @@
       </el-table-column>
       <slot></slot>
     </el-table>
-    <div :style="tablePlaceholderStyle" class="table-loading" v-loading="loading"></div>
+    <div class="table-loading" v-loading="loading"></div>
     <el-row type="flex" class="row-bg" :justify="pagerPosition">
       <el-pagination
         class="itz-table-el-pagination"
@@ -75,10 +75,7 @@
 
       width: [String, Number],
 
-      height: {
-        type: [String, Number],
-        default: 400
-      },
+      height: [String, Number],
 
       fit: {
         type: Boolean,
@@ -161,13 +158,19 @@
         queryParams: {
           size: 10,
           page: 1
-        }
+        },
+        lastRequest: null
       };
     },
 
-    mounted() {
+    beforeMount() {
+      console.debug('beforeMounted');
       this.queryParams.size = this.pageSize;
       this.queryParams.page = this.currentPage;
+    },
+
+    mounted() {
+      console.debug('mounted');
       this.getDataRemote();
       this.$on('onSearch', this.onSearch);
       this.$on('onDelete', this.onDelete);
@@ -177,8 +180,15 @@
       getDataRemote() {
         if (this.queryUrl) {
           this.loading = true;
-          let url = this.buildUrl();
-          this.$http.get(url)
+          this.$http.get(this.queryUrl, {
+            params: Object.assign({}, this.queryParams, this.searchObject),
+            before(xhr) {
+              if (this.lastRequest) {
+                this.lastRequest.abort();
+              }
+              this.lastRequest = xhr;
+            }
+          })
             .then((res) => {
               this.loading = false;
               if (res.status !== 200 || res.body.code !== 0) {
@@ -206,15 +216,18 @@
         }
       },
       handleSizeChange(newVal) {
+        console.debug('clicked:handleSizeChange', newVal);
         this.queryParams.page = 1;
         this.queryParams.size = newVal;
         this.getDataRemote();
       },
       handleCurrentChange(newVal) {
+        console.debug('clicked:handleCurrentChange', newVal);
         this.queryParams.page = newVal;
         this.getDataRemote();
       },
       handleSelectRow(val) {
+        console.debug('clicked:handleSelectRow', val);
         this.rowSelected = val;
       },
       onSearch() {
@@ -227,9 +240,19 @@
           params.push(row.id);
         });
         console.debug('clicked:onDelete', params);
-        if (this.deleteUrl) {
+        if (this.deleteUrl && params.length) {
+          if (params.length === 1) {
+            params = params[0];
+          }
           this.$http.post(this.deleteUrl, {
-            'ids': params
+            id: params
+          }, {
+            before(xhr) {
+              if (this.lastRequest) {
+                this.lastRequest.abort();
+              }
+              this.lastRequest = xhr;
+            }
           }).then((res) => {
             if (res.status !== 200 || res.body.code !== 0) {
               this.$notify.error({
@@ -252,48 +275,6 @@
             });
           });
         }
-      },
-      buildUrl() {
-        return this.queryUrl + '?' + this.serialize(Object.assign({}, this.queryParams, this.searchObject));
-      },
-      serialize(obj, prefix) {
-        if (obj) {
-          var str = [];
-          for (var p in obj) {
-            if (obj.hasOwnProperty(p)) {
-              var k = prefix ? prefix + '[' + p + ']' : p;
-              var v = obj[p];
-              str.push(
-                typeof v === 'object'
-                ? this.serialize(v, k)
-                : encodeURIComponent(k) + '=' + encodeURIComponent(
-                  (v === 'null' || v === 'undefined' || v === undefined)
-                  ? ''
-                  : v
-                )
-              );
-            }
-          };
-          return str.join('&');
-        } else {
-          return '';
-        }
-      }
-    },
-
-    computed: {
-      tablePlaceholderStyle() {
-        if (!this.tableDataTotal || this.loading) {
-          this.tableHeight = 0;
-          return {
-            height: this.height + 'px'
-          };
-        } else {
-          this.tableHeight = this.height;
-          return {
-            height: '0px'
-          };
-        }
       }
     }
   };
@@ -302,5 +283,13 @@
 <style scoped>
   .itz-table-el-pagination {
     margin-top: 10px
+  }
+  .table-loading {
+    width: 100%;
+    height: 100%;
+    position: absolute!important;
+    top: 0;
+    left: 0;
+    pointer-events: none;
   }
 </style>

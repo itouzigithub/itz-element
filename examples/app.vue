@@ -11,7 +11,6 @@
       :current-page="1"
       pagerPosition="start"
       selectionMode="multiple"
-      height="250"
       :searchObject="searchObject"
       ref="myTable">
       <div slot="searchs">

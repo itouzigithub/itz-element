@@ -54,15 +54,17 @@ app.get('/list', function(req,res,next) {
     }, 1000)
 })
 app.post('/list/delete', function(req, res, next) {
-    console.log(req.body.ids, ' And has been deleted rows are:', deleteRowIds)
-    deleteRowIds = deleteRowIds.concat(req.body.ids).filter(function(val, index, self) {
+    console.log(req.body.id, ' And has been deleted rows are:', deleteRowIds)
+    deleteRowIds = deleteRowIds.concat(req.body.id).filter(function(val, index, self) {
         return self.indexOf(val) === index
     })
-    res.json({
-        code: 0,
-        info: "ok",
-        data: {}
-    });
+    setTimeout(function() {
+        res.json({
+            code: 0,
+            info: "ok",
+            data: {}
+        });
+    }, 200)
 })
 app.post('/save', function(req,res,next) {
     var item = req.body;
