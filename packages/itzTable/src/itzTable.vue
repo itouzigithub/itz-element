@@ -126,7 +126,9 @@
       },
       pageSizes: {
         type: Array,
-        default: [10, 20, 30, 50]
+        default: function() {
+          return [10, 20, 30, 50]
+        }
       },
       pagerPosition: {
         type: String,

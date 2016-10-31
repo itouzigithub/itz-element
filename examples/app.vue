@@ -6,8 +6,6 @@
       query-url="http://localhost:8888/list"
       delete-url="http://localhost:8888/list/delete"
       border
-      :page-size="5"
-      :page-sizes="[5, 10, 20, 30, 50]"
       :current-page="1"
       pagerPosition="start"
       selectionMode="multiple"
