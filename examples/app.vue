@@ -5,11 +5,11 @@
     <itz-table
       query-url="http://localhost:8888/list"
       delete-url="http://localhost:8888/list/delete"
+      :delete-confirm="true"
       border
-      :current-page="1"
-      pagerPosition="start"
-      selectionMode="single"
-      :searchObject="searchObject"
+      :show-pagination="false"
+      selection-mode="single"
+      :search-object="searchObject"
       ref="myTable">
       <div slot="searchs">
         <el-form-item>

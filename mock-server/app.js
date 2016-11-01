@@ -48,7 +48,7 @@ app.get('/list', function(req,res,next) {
             info: "ok",
             data: {
                 listTotal: result.length,
-                listInfo: result.slice((+req.query.page-1) * +req.query.limit).slice(0, +req.query.limit)
+                listInfo: (+req.query.limit ? result.slice((+req.query.page-1) * +req.query.limit).slice(0, +req.query.limit) : result)
             }
         });
     }, 1000)

@@ -30,7 +30,9 @@
       <slot></slot>
     </el-table>
     <div class="table-loading" v-loading="loading"></div>
-    <el-row type="flex" class="row-bg" :justify="pagerPosition">
+    <el-row type="flex" class="row-bg" :justify="pagerPosition"
+      v-if="showPagination"
+    >
       <el-pagination
         class="itz-table-el-pagination"
         @sizechange="handleSizeChange"
@@ -65,6 +67,10 @@
       deleteUrl: {
         type: String,
         default: ''
+      },
+      deleteConfirm: {
+        type: Boolean,
+        default: true
       },
       data: {
         type: Array,
@@ -137,6 +143,10 @@
       searchObject: {
         type: Object,
         default: {}
+      },
+      showPagination: {
+        type: Boolean,
+        default: true
       }
     },
 
@@ -167,8 +177,10 @@
 
     beforeMount() {
       console.debug('beforeMounted');
-      this.queryParams.limit = this.pageSize;
-      this.queryParams.page = this.currentPage;
+      if (this.showPagination) {
+        this.queryParams.limit = this.pageSize;
+        this.queryParams.page = this.currentPage;
+      }
     },
 
     mounted() {
@@ -184,7 +196,11 @@
         if (this.queryUrl) {
           this.loading = true;
           this.$http.get(this.queryUrl, {
-            params: Object.assign({}, this.queryParams, this.searchObject),
+            params: Object.assign(
+              {},
+              (this.showPagination ? this.queryParams : {}),
+              this.searchObject
+            ),
             before(xhr) {
               if (this.lastRequest) {
                 this.lastRequest.abort();
@@ -244,29 +260,44 @@
         }
         console.debug('clicked:onDelete', params);
         if (this.deleteUrl) {
-          this.$http.post(this.deleteUrl, {
-            id: params
-          }, {
-            emulateJSON: true,
-            before(xhr) {
-              if (this.lastRequest) {
-                this.lastRequest.abort();
-              }
-              this.lastRequest = xhr;
-            }
-          }).then((res) => {
-            if (res.status !== 200 || res.body.code !== 0) {
-              this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
-            } else {
-              this.$message.success('删除成功');
-              this.queryParams.page = 1;
-              this.getDataRemote();
-            }
-          }, (res) => {
-            this.loading = false;
-            this.$message.error('服务器题了一个问题，正在寻找答案...');
-          });
+          if (this.deleteConfirm) {
+            this.$confirm('将执行删除操作，是否继续？', '警告', {
+              type: 'warning'
+            }).then(() => {
+              this.execDelete(params);
+            }).catch(() => {
+              console.debug('clicked:onDelete:cancel', params);
+            });
+          } else {
+            this.execDelete(params);
+          }
+        } else {
+          this.$message.error('组件没有提供删除地址');
         }
+      },
+      execDelete(params) {
+        console.debug('clicked:onDelete:exec', params);
+        this.$http.post(this.deleteUrl, { id: params }, {
+          emulateJSON: true,
+          before(xhr) {
+            if (this.lastRequest) {
+              this.lastRequest.abort();
+            }
+            this.lastRequest = xhr;
+          }
+        }).then((res) => {
+          if (res.status !== 200 || res.body.code !== 0) {
+            this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+          } else {
+            this.$message.success('删除成功');
+            if (this.showPagination) {
+              this.queryParams.page = 1;
+            }
+            this.getDataRemote();
+          }
+        }, (res) => {
+          this.$message.error('服务器题了一个问题，正在寻找答案...');
+        });
       }
     }
   };
