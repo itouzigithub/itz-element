@@ -8,7 +8,7 @@
       border
       :current-page="1"
       pagerPosition="start"
-      selectionMode="multiple"
+      selectionMode="single"
       :searchObject="searchObject"
       ref="myTable">
       <div slot="searchs">

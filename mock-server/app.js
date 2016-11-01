@@ -38,7 +38,7 @@ app.get('/list', function(req,res,next) {
     }
     if (deleteRowIds.length) {
         result = result.filter(function(item) {
-            return deleteRowIds.indexOf(item.id) === -1
+            return deleteRowIds.indexOf(''+item.id) === -1
         })
     }
     // console.log(result)
@@ -54,17 +54,55 @@ app.get('/list', function(req,res,next) {
     }, 1000)
 })
 app.post('/list/delete', function(req, res, next) {
-    console.log(req.body.id, ' And has been deleted rows are:', deleteRowIds)
-    deleteRowIds = deleteRowIds.concat(req.body.id).filter(function(val, index, self) {
-        return self.indexOf(val) === index
-    })
-    setTimeout(function() {
-        res.json({
-            code: 0,
-            info: "ok",
-            data: {}
-        });
-    }, 200)
+    var queryData = '';
+    req.on('data', function(data) {
+        queryData += data;
+        if(queryData.length > 1e6) {
+            queryData = "";
+            res.writeHead(413, {'Content-Type': 'text/plain'});
+            res.end();
+            req.connection.destroy();
+        }
+    });
+    req.on('end', function() {
+        var post = {};
+        queryData.split('&').forEach(function(item) {
+            var field = item.split('=').map(function(i) {
+                return decodeURIComponent(i)
+            })
+            if (field[0].indexOf('[]') !== -1) {
+                field[0] = field[0].replace('[]', '')
+            }
+            if (post[field[0]]) {
+                if (post[field[0]] instanceof Array) {
+                    post[field[0]].push(field[1])
+                } else {
+                    post[field[0]] = [ post[field[0]], field[1] ]
+                }
+            } else {
+                post[field[0]] = field[1]
+            }
+        })
+        req.body = post;
+        console.log(req.body, ' And has been deleted rows are:', deleteRowIds)
+        if (!(req.body.id instanceof Array) && isNaN(req.body.id)) {
+            res.json({
+                code: 1,
+                info: "缺少项目 id",
+                data: {}
+            });
+        }
+        deleteRowIds = deleteRowIds.concat(req.body.id).filter(function(val, index, self) {
+            return self.indexOf(val) === index
+        })
+        setTimeout(function() {
+            res.json({
+                code: 0,
+                info: "ok",
+                data: {}
+            });
+        }, 200)
+    });
 })
 app.post('/save', function(req,res,next) {
     var item = req.body;

@@ -127,7 +127,7 @@
       pageSizes: {
         type: Array,
         default: function() {
-          return [10, 20, 30, 50]
+          return [10, 20, 30, 50];
         }
       },
       pagerPosition: {
@@ -174,6 +174,7 @@
     mounted() {
       console.debug('mounted');
       this.getDataRemote();
+      this.$on('onRefresh', this.onRefresh);
       this.$on('onSearch', this.onSearch);
       this.$on('onDelete', this.onDelete);
     },
@@ -194,26 +195,17 @@
             .then((res) => {
               this.loading = false;
               if (res.status !== 200 || res.body.code !== 0) {
-                this.$notify.error({
-                  title: '错误',
-                  message: '服务器题了一个问题，正在寻找答案...'
-                });
+                this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
               } else {
                 this.tableData = res.body.data.listInfo;
                 this.tableDataTotal = res.body.data.listTotal;
                 if (this.tableDataTotal === 0) {
-                  this.$notify.info({
-                    title: '警告',
-                    message: '没有符合条件的数据...'
-                  });
+                  this.$message.info('没有符合条件的数据...');
                 }
               }
             }, (res) => {
               this.loading = false;
-              this.$notify.error({
-                title: '错误',
-                message: '服务器题了一个问题，正在寻找答案...'
-              });
+              this.$message.error('服务器题了一个问题，正在寻找答案...');
             });
         }
       },
@@ -232,23 +224,30 @@
         console.debug('clicked:handleSelectRow', val);
         this.rowSelected = val;
       },
+      onRefresh() {
+        console.debug('emited:onRefresh');
+        this.getDataRemote();
+      },
       onSearch() {
         console.debug('clicked:onSearch', this.searchObject);
         this.getDataRemote();
       },
       onDelete() {
-        var params = [];
-        this.rowSelected.map((row) => {
-          params.push(row.id);
-        });
+        var params;
+        if (this.selectionMode === 'multiple') {
+          params = [];
+          this.rowSelected.map((row) => {
+            params.push(row.id);
+          });
+        } else {
+          params = this.rowSelected.id;
+        }
         console.debug('clicked:onDelete', params);
-        if (this.deleteUrl && params.length) {
-          if (params.length === 1) {
-            params = params[0];
-          }
+        if (this.deleteUrl) {
           this.$http.post(this.deleteUrl, {
             id: params
           }, {
+            emulateJSON: true,
             before(xhr) {
               if (this.lastRequest) {
                 this.lastRequest.abort();
@@ -257,24 +256,15 @@
             }
           }).then((res) => {
             if (res.status !== 200 || res.body.code !== 0) {
-              this.$notify.error({
-                title: '错误',
-                message: '服务器题了一个问题，正在寻找答案...'
-              });
+              this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
             } else {
-              this.$notify.success({
-                title: '成功',
-                message: '已删除'
-              });
+              this.$message.success('删除成功');
               this.queryParams.page = 1;
               this.getDataRemote();
             }
           }, (res) => {
             this.loading = false;
-            this.$notify.error({
-              title: '错误',
-              message: '服务器题了一个问题，正在寻找答案...'
-            });
+            this.$message.error('服务器题了一个问题，正在寻找答案...');
           });
         }
       }
