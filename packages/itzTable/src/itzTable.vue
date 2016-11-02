@@ -303,11 +303,11 @@
           if (res.status !== 200 || res.body.code !== 0) {
             this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
           } else {
-            this.getDataRemote();
-            this.$message.success('删除成功');
             if (this.showPagination) {
               this.queryParams.page = 1;
             }
+            this.getDataRemote();
+            this.$message.success('删除成功');
           }
         }, (res) => {
           this.$message.error('服务器题了一个问题，正在寻找答案...');
@@ -322,25 +322,29 @@
         }
         if (this.maxHeight) {
           var elTableRect = this.$refs.elTable.$el.getBoundingClientRect();
-          var elTableElementRect = this.$refs.elTable.$el.querySelector('.el-table__body').getBoundingClientRect();
+          var elTableHeadRect = this.$refs.elTable.$el.querySelector('.el-table__header').getBoundingClientRect();
+          var elTableBodyRect = this.$refs.elTable.$el.querySelector('.el-table__body').getBoundingClientRect();
+          var elTableHeight = elTableBodyRect.height + elTableHeadRect.height;
+          var elTableHeightWithPager = elTableHeight;
           var _x = 15;// 偏移量
           if (this.showPagination) {
             var elPagination = this.$refs.elPagination.$el.getBoundingClientRect();
             _x += elPagination.height + 5
+            elTableHeightWithPager += elPagination.height
           }
           if (this.maxHeight == 'auto') {
             var bodyHeight = window.innerHeight;
             var _height = bodyHeight - elTableRect.top;
-            if (_height < elTableElementRect.height) {
+            if (_height < elTableHeightWithPager) {
               this.tableHeight = _height - _x;
             } else {
-              this.tableHeight = elTableElementRect.height;
+              this.tableHeight = elTableHeight;
             }
           } else {
-            if (this.maxHeight < elTableElementRect.height) {
+            if (this.maxHeight < elTableHeightWithPager) {
               this.tableHeight = this.maxHeight;
             } else {
-              this.tableHeight = elTableElementRect.height;
+              this.tableHeight = elTableHeight;
             }
           }
         }
