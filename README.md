@@ -20,7 +20,7 @@ npm run dist
 
 ### itz-table 配置
 |参数|说明|类型|可选值|默认值|
-|-|:-:|:-:|:-:|:-:|
+|---|:---:|:---:|:---:|:---:|
 |width|表格固定宽度|number|-|-|
 |height|表格固定高度|number|-|-|
 |max-height|表格最大自适应高度，值为auto时表示取页面最大高度|string, number|'auto'|-|
@@ -44,7 +44,7 @@ npm run dist
 调用组件事件时使用: this.$refs.mytable.$emit(事件名称, true)
 注：mytable 为页面中 itz-table 的 ref 属性值
 |事件名称|说明|
-|-|:-:|
+|---|:---:|
 |onSearch|通知表格进行查询|
 |onRefresh|通知表格刷新|
 |onDelete|通知表格删除当前选中的行|
