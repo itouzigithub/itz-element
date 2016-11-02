@@ -52,5 +52,9 @@ npm run dist
 |onRefresh|通知表格刷新|
 |onDelete|通知表格删除当前选中的行|
 
+### 关联操作按钮
+
+```itz-table``` 提供 name 为 ```options``` 的插槽，可以自定义查询条件元素和各种按钮放入插槽，示例请看 ```example/app.vue```
+
 # License
 MIT
