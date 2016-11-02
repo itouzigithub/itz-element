@@ -7,53 +7,60 @@
       delete-url="http://localhost:8888/list/delete"
       :delete-confirm="true"
       border
-      :show-pagination="false"
+      max-height="auto"
       selection-mode="single"
       :search-object="searchObject"
+      pager-position="center"
       ref="myTable">
-      <div slot="searchs">
-        <el-form-item>
-          <el-input v-model="searchObject.name" placeholder="贷款项目名称"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-select v-model="searchObject.type" placeholder="产品类型" clearable>
-            <el-option
-              v-for="op in this.typeOptions"
-              :label="op.label"
-              :value="op.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </div>
-      <div slot="buttons">
-        <el-form-item>
-          <el-button type="primary" @click.native.prevent="onSearch">查询</el-button>
-          <el-button type="success" @click.native.prevent="openInsertDialog">新增</el-button>
-          <el-button type="warning" @click.native.prevent="openEditDialog">修改</el-button>
-          <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
-          <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
-        </el-form-item>
-        </div>
-        <el-table-column
-          type="index"
-          label="序号">
-        </el-table-column>
-        <el-table-column
-          property="name"
-          label="贷款项目名称">
-        </el-table-column>
-        <el-table-column
-          property="type"
-          label="产品类型">
-        </el-table-column>
-        <el-table-column
-          property="borrowtype"
-          label="借款模式">
-        </el-table-column>
-        <el-table-column
-          property="enterprise"
-          label="借款企业">
-        </el-table-column>
+      <el-form slot="options" :inline="true">
+        <el-row type="flex" justify="space-between">
+          <el-col :span="12">
+            <el-form-item>
+              <el-input v-model="searchObject.name" placeholder="贷款项目名称"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-select v-model="searchObject.type" placeholder="产品类型" clearable>
+                <el-option
+                  v-for="op in this.typeOptions"
+                  :label="op.label"
+                  :value="op.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-row type="flex" justify="end">
+              <el-form-item>
+                <el-button type="primary" @click.native.prevent="onSearch">查询</el-button>
+                <el-button type="success" @click.native.prevent="openInsertDialog">新增</el-button>
+                <el-button type="warning" @click.native.prevent="openEditDialog">修改</el-button>
+                <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
+                <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
+              </el-form-item>
+            </el-row>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-table-column
+        type="index"
+        label="序号">
+      </el-table-column>
+      <el-table-column
+        property="name"
+        label="贷款项目名称">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型">
+      </el-table-column>
+      <el-table-column
+        property="borrowtype"
+        label="借款模式">
+      </el-table-column>
+      <el-table-column
+        property="enterprise"
+        label="借款企业">
+      </el-table-column>
     </itz-table>
   </div>
 </template>

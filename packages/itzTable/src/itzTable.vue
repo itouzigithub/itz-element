@@ -1,14 +1,9 @@
 <template>
-  <div class="itz-table">
-    <el-row>
-        <el-form :inline="true">
-          <slot name="searchs"></slot>
-          <slot name="buttons"></slot>
-        </el-form>
-    </el-row>
+  <div class="itz-table" :style="tableStyle">
+    <slot name="options"></slot>
     <el-table
       :data="tableData"
-      :width="width"
+      :style="tableStyle"
       :height="tableHeight"
       :fit="fit"
       :stripe="stripe"
@@ -34,6 +29,7 @@
       v-if="showPagination"
     >
       <el-pagination
+        ref="elPagination"
         class="itz-table-el-pagination"
         @sizechange="handleSizeChange"
         @currentchange="handleCurrentChange"
@@ -80,6 +76,8 @@
       },
 
       width: [String, Number],
+      
+      maxHeight: [String, Number],
 
       height: [String, Number],
 
@@ -163,6 +161,7 @@
     data() {
       return {
         loading: false,
+        tableStyle: {},
         tableHeight: 0,
         tableData: [],
         tableDataTotal: 0,
@@ -177,6 +176,9 @@
 
     beforeMount() {
       console.debug('beforeMounted');
+      if (this.height) {
+        this.tableHeight = this.height
+      }
       if (this.showPagination) {
         this.queryParams.limit = this.pageSize;
         this.queryParams.page = this.currentPage;
@@ -185,10 +187,17 @@
 
     mounted() {
       console.debug('mounted');
+      window.onresize = () => this.calcTableStyle();
       this.getDataRemote();
       this.$on('onRefresh', this.onRefresh);
       this.$on('onSearch', this.onSearch);
       this.$on('onDelete', this.onDelete);
+    },
+
+    watch: {
+      queryUrl(newProps, oldProps) {
+        this.getDataRemote();
+      }
     },
 
     methods: {
@@ -211,6 +220,8 @@
             .then((res) => {
               this.loading = false;
               if (res.status !== 200 || res.body.code !== 0) {
+                this.tableData = [];
+                this.tableDataTotal = 0;
                 this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
               } else {
                 this.tableData = res.body.data.listInfo;
@@ -218,9 +229,12 @@
                 if (this.tableDataTotal === 0) {
                   this.$message.info('没有符合条件的数据...');
                 }
+                this.$nextTick(() => this.calcTableStyle());
               }
             }, (res) => {
               this.loading = false;
+              this.tableData = [];
+              this.tableDataTotal = 0;
               this.$message.error('服务器题了一个问题，正在寻找答案...');
             });
         }
@@ -289,15 +303,47 @@
           if (res.status !== 200 || res.body.code !== 0) {
             this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
           } else {
+            this.getDataRemote();
             this.$message.success('删除成功');
             if (this.showPagination) {
               this.queryParams.page = 1;
             }
-            this.getDataRemote();
           }
         }, (res) => {
           this.$message.error('服务器题了一个问题，正在寻找答案...');
         });
+      },
+      calcTableStyle() {
+        console.debug('calcTableStyle:exec');
+        if (this.width) {
+          this.tableStyle = {
+            width: this.width + 'px'
+          }
+        }
+        if (this.maxHeight) {
+          var elTableRect = this.$refs.elTable.$el.getBoundingClientRect();
+          var elTableElementRect = this.$refs.elTable.$el.querySelector('.el-table__body').getBoundingClientRect();
+          var _x = 15;// 偏移量
+          if (this.showPagination) {
+            var elPagination = this.$refs.elPagination.$el.getBoundingClientRect();
+            _x += elPagination.height + 5
+          }
+          if (this.maxHeight == 'auto') {
+            var bodyHeight = window.innerHeight;
+            var _height = bodyHeight - elTableRect.top;
+            if (_height < elTableElementRect.height) {
+              this.tableHeight = _height - _x;
+            } else {
+              this.tableHeight = elTableElementRect.height;
+            }
+          } else {
+            if (this.maxHeight < elTableElementRect.height) {
+              this.tableHeight = this.maxHeight;
+            } else {
+              this.tableHeight = elTableElementRect.height;
+            }
+          }
+        }
       }
     }
   };
