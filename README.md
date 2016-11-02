@@ -16,9 +16,10 @@ npm run dist
 
 # Components
 
-## itz-table 组件
+## itz-table 组件 
 
-### itz-table 配置
+### itz-table 配置 
+
 |参数|说明|类型|可选值|默认值|
 |---|:---:|:---:|:---:|:---:|
 |width|表格固定宽度|number|-|-|
@@ -40,11 +41,13 @@ npm run dist
 |show-pagination|是否显示分页|boolean|true/false|true|
 |search-object|搜索对象|object|-|{}|
 
-### itz-table 事件
-调用组件事件时使用: this.$refs.mytable.$emit(事件名称, true)
-注：mytable 为页面中 itz-table 的 ref 属性值
+### itz-table 事件 
+
+调用组件事件时使用: ```this.$refs.mytable.$emit(事件名称, true)```
+注：```mytable``` 为页面中 ```itz-table``` 的 ```ref``` 属性值 
+
 |事件名称|说明|
-|---|:---:|
+|----|:----:|
 |onSearch|通知表格进行查询|
 |onRefresh|通知表格刷新|
 |onDelete|通知表格删除当前选中的行|
