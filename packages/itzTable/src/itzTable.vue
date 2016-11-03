@@ -222,7 +222,17 @@
               if (res.status !== 200 || res.body.code !== 0) {
                 this.tableData = [];
                 this.tableDataTotal = 0;
-                this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+                if (res.body.code == 10107 && this.$auth) {
+                    var vm  = this;
+                    this.$alert('用户未登录','提示', {
+                        type:'error',
+                        callback: action => {
+                            vm.$auth.logout(vm);
+                        }
+                    });
+                } else {
+                    this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+                }
               } else {
                 this.tableData = res.body.data.listInfo;
                 this.tableDataTotal = res.body.data.listTotal;
@@ -301,7 +311,17 @@
           }
         }).then((res) => {
           if (res.status !== 200 || res.body.code !== 0) {
-            this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+            if (res.body.code == 10107 && this.$auth) {
+                    var vm  = this;
+                    this.$alert('用户未登录','提示', {
+                        type:'error',
+                        callback: action => {
+                            vm.$auth.logout(vm);
+                        }
+                    });
+                } else {
+                    this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+                }
           } else {
             if (this.showPagination) {
               this.queryParams.page = 1;
