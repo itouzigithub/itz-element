@@ -177,7 +177,9 @@
     beforeMount() {
       console.debug('beforeMounted');
       if (this.height) {
-        this.tableHeight = this.height
+        this.tableHeight = this.height;
+      } else if (this.maxHeight != 'auto') {
+        this.tableHeight = this.maxHeight;
       }
       if (this.showPagination) {
         this.queryParams.limit = this.pageSize;
@@ -225,7 +227,7 @@
                 this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
               } else {
                 this.tableData = res.body.data.listInfo;
-                this.tableDataTotal = res.body.data.listTotal;
+                this.tableDataTotal = res.body.data.listTotal || res.body.data.listInfo.length;
                 if (this.tableDataTotal === 0) {
                   this.$message.info('没有符合条件的数据...');
                 }
@@ -316,11 +318,17 @@
       calcTableStyle() {
         console.debug('calcTableStyle:exec');
         if (this.width) {
+          let _width;
+          if (typeof this.width === 'string' && this.width.indexOf('%') !== -1) {
+            _width = this.width;
+          } else {
+            _width = this.width + 'px'
+          }
           this.tableStyle = {
-            width: this.width + 'px'
+            width: _width
           }
         }
-        if (this.maxHeight) {
+        if (this.maxHeight && this.$refs.elTable) {
           var elTableRect = this.$refs.elTable.$el.getBoundingClientRect();
           var elTableHeadRect = this.$refs.elTable.$el.querySelector('.el-table__header').getBoundingClientRect();
           var elTableBodyRect = this.$refs.elTable.$el.querySelector('.el-table__body').getBoundingClientRect();
@@ -337,12 +345,26 @@
             var _height = bodyHeight - elTableRect.top;
             if (_height < elTableHeightWithPager) {
               this.tableHeight = _height - _x;
+            } else if (elTableHeight == 0) {
+              var _h = this.tableDataTotal * 42;
+              if (_h > _height) {
+                this.tableHeight = _height;
+              } else {
+                this.tableHeight = _h + 42 - this.tableDataTotal;
+              }
             } else {
               this.tableHeight = elTableHeight;
             }
           } else {
             if (this.maxHeight < elTableHeightWithPager) {
               this.tableHeight = this.maxHeight;
+            } else if (elTableHeight == 0) {
+              var _h = this.tableDataTotal * 42;
+              if (_h > this.maxHeight) {
+                this.tableHeight = this.maxHeight;
+              } else {
+                this.tableHeight = _h + 42 - this.tableDataTotal;
+              }
             } else {
               this.tableHeight = elTableHeight;
             }
