@@ -224,7 +224,17 @@
               if (res.status !== 200 || res.body.code !== 0) {
                 this.tableData = [];
                 this.tableDataTotal = 0;
-                this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+                if (res.body.code == 10107 && this.$auth) {
+                  let vm  = this;
+                  this.$alert('用户未登录','提示', {
+                    type:'error',
+                    callback: action => {
+                      vm.$auth.logout(vm);
+                    }
+                  });
+                } else {
+                  this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+                }
               } else {
                 this.tableData = res.body.data.listInfo;
                 this.tableDataTotal = res.body.data.listTotal || res.body.data.listInfo.length;
@@ -265,7 +275,7 @@
         this.getDataRemote();
       },
       onDelete() {
-        var params;
+        let params;
         if (this.selectionMode === 'multiple') {
           params = [];
           this.rowSelected.map((row) => {
@@ -303,7 +313,17 @@
           }
         }).then((res) => {
           if (res.status !== 200 || res.body.code !== 0) {
-            this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+            if (res.body.code == 10107 && this.$auth) {
+              let vm  = this;
+              this.$alert('用户未登录','提示', {
+                type:'error',
+                callback: action => {
+                  vm.$auth.logout(vm);
+                }
+              });
+            } else {
+              this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
+            }
           } else {
             if (this.showPagination) {
               this.queryParams.page = 1;
@@ -322,31 +342,32 @@
           if (typeof this.width === 'string' && this.width.indexOf('%') !== -1) {
             _width = this.width;
           } else {
-            _width = this.width + 'px'
+            _width = this.width + 'px';
           }
           this.tableStyle = {
             width: _width
-          }
+          };
         }
         if (this.maxHeight && this.$refs.elTable) {
-          var elTableRect = this.$refs.elTable.$el.getBoundingClientRect();
-          var elTableHeadRect = this.$refs.elTable.$el.querySelector('.el-table__header').getBoundingClientRect();
-          var elTableBodyRect = this.$refs.elTable.$el.querySelector('.el-table__body').getBoundingClientRect();
-          var elTableHeight = elTableBodyRect.height + elTableHeadRect.height;
-          var elTableHeightWithPager = elTableHeight;
-          var _x = 15;// 偏移量
+          let el = this.$refs.elTable.$el;
+          let elTableRect = el.getBoundingClientRect();
+          let headRect = el.querySelector('.el-table__header').getBoundingClientRect();
+          let bodyRect = el.querySelector('.el-table__body').getBoundingClientRect();
+          let elTableHeight = bodyRect.height + headRect.height;
+          let elTableHeightWithPager = elTableHeight;
+          let _h = 15;// 偏移量
           if (this.showPagination) {
-            var elPagination = this.$refs.elPagination.$el.getBoundingClientRect();
-            _x += elPagination.height + 5
+            let elPagination = this.$refs.elPagination.$el.getBoundingClientRect();
+            _h += elPagination.height + 5
             elTableHeightWithPager += elPagination.height
           }
-          if (this.maxHeight == 'auto') {
-            var bodyHeight = window.innerHeight;
-            var _height = bodyHeight - elTableRect.top;
+          if (this.maxHeight === 'auto') {
+            let bodyHeight = window.innerHeight;
+            let _height = bodyHeight - elTableRect.top;
             if (_height < elTableHeightWithPager) {
-              this.tableHeight = _height - _x;
+              this.tableHeight = _height - _h;
             } else if (elTableHeight == 0) {
-              var _h = this.tableDataTotal * 42;
+              let _h = this.tableDataTotal * 42;
               if (_h > _height) {
                 this.tableHeight = _height;
               } else {
@@ -359,7 +380,7 @@
             if (this.maxHeight < elTableHeightWithPager) {
               this.tableHeight = this.maxHeight;
             } else if (elTableHeight == 0) {
-              var _h = this.tableDataTotal * 42;
+              let _h = this.tableDataTotal * 42;
               if (_h > this.maxHeight) {
                 this.tableHeight = this.maxHeight;
               } else {

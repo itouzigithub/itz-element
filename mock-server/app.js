@@ -16,24 +16,17 @@ var deleteRowIds = []
 app.get('/list', function(req,res,next) {
     console.log(req.query, ' And has been deleted rows are:', deleteRowIds)
     var result = JSON.parse(JSON.stringify(list))
-    if (req.query.name) {
-        result = result.filter(function(item) {
-            return item.name.match(req.query.name)
-        })
-    }
-    if (req.query.type) {
-        result = result.filter(function(item) {
-            return item.type.match(req.query.type)
-        })
-    }
-    if (req.query.borrowtype) {
-        result = result.filter(function(item) {
-            return item.borrowtype.match(req.query.borrowtype)
-        })
-    }
-    if (req.query.enterprise) {
-        result = result.filter(function(item) {
-            return item.enterprise.match(req.query.enterprise)
+    var queryKeys = Object.keys(req.query)
+    var listKeys = Object.keys(result[0])
+    if (queryKeys.length) {
+        queryKeys.forEach(function(key) {
+            if (['page', 'limit'].indexOf(key) === -1
+                && listKeys.indexOf(key) !== -1
+            ) {
+                result = result.filter(function(item) {
+                    return item[key].match(req.query[key])
+                })
+            }
         })
     }
     if (deleteRowIds.length) {
