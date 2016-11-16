@@ -1,7 +1,10 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({    
+  extended: true
+}));
 app.use(express.static('dist'));
 app.all("*", function(req, res, next) { 
     res.header('Access-Control-Allow-Origin', '*');
@@ -10,92 +13,60 @@ app.all("*", function(req, res, next) {
     if (req.method == 'OPTIONS') { res.sendStatus(200); } else { next(); } 
 });
 
-var list = require('./table.data.json')
-var deleteRowIds = []
+var jsonData = require('./table.data.json');
+var list = JSON.parse(JSON.stringify(jsonData));
+var deleteRowIds = [];
 
 app.get('/list', function(req,res,next) {
-    console.log(req.query, ' And has been deleted rows are:', deleteRowIds)
-    var result = JSON.parse(JSON.stringify(list))
     var queryKeys = Object.keys(req.query)
-    var listKeys = Object.keys(result[0])
+    var listKeys = Object.keys(list[0])
     if (queryKeys.length) {
         queryKeys.forEach(function(key) {
             if (['page', 'limit'].indexOf(key) === -1
                 && listKeys.indexOf(key) !== -1
             ) {
-                result = result.filter(function(item) {
+                list = list.filter(function(item) {
                     return item[key].match(req.query[key])
                 })
             }
         })
     }
     if (deleteRowIds.length) {
-        result = result.filter(function(item) {
+        list = list.filter(function(item) {
             return deleteRowIds.indexOf(''+item.id) === -1
         })
     }
-    // console.log(result)
+    // console.log(list)
     setTimeout(function() {
         res.json({
             code: 0,
             info: "ok",
             data: {
-                listTotal: result.length,
-                listInfo: (+req.query.limit ? result.slice((+req.query.page-1) * +req.query.limit).slice(0, +req.query.limit) : result)
+                listTotal: list.length,
+                listInfo: (+req.query.limit ? list.slice((+req.query.page-1) * +req.query.limit).slice(0, +req.query.limit) : list)
             }
         });
     }, 1000)
 })
 app.post('/list/delete', function(req, res, next) {
-    var queryData = '';
-    req.on('data', function(data) {
-        queryData += data;
-        if(queryData.length > 1e6) {
-            queryData = "";
-            res.writeHead(413, {'Content-Type': 'text/plain'});
-            res.end();
-            req.connection.destroy();
-        }
-    });
-    req.on('end', function() {
-        var post = {};
-        queryData.split('&').forEach(function(item) {
-            var field = item.split('=').map(function(i) {
-                return decodeURIComponent(i)
-            })
-            if (field[0].indexOf('[]') !== -1) {
-                field[0] = field[0].replace('[]', '')
-            }
-            if (post[field[0]]) {
-                if (post[field[0]] instanceof Array) {
-                    post[field[0]].push(field[1])
-                } else {
-                    post[field[0]] = [ post[field[0]], field[1] ]
-                }
-            } else {
-                post[field[0]] = field[1]
-            }
-        })
-        req.body = post;
-        console.log(req.body, ' And has been deleted rows are:', deleteRowIds)
-        if (!(req.body.id instanceof Array) && isNaN(req.body.id)) {
-            res.json({
-                code: 1,
-                info: "缺少项目 id",
-                data: {}
-            });
-        }
-        deleteRowIds = deleteRowIds.concat(req.body.id).filter(function(val, index, self) {
-            return self.indexOf(val) === index
-        })
-        setTimeout(function() {
-            res.json({
-                code: 0,
-                info: "ok",
-                data: {}
-            });
-        }, 200)
-    });
+    console.log(req.body, ' And has been deleted rows are:', deleteRowIds)
+    if (!(req.body.id instanceof Array) && isNaN(req.body.id)) {
+        res.json({
+            code: 1,
+            info: "缺少项目 id",
+            data: {}
+        });
+    }
+    deleteRowIds = deleteRowIds.concat(req.body.id).filter(function(val, index, self) {
+        return self.indexOf(val) === index
+    })
+    setTimeout(function() {
+        res.json({
+            code: 0,
+            info: "ok",
+            data: {}
+        });
+    }, 200)
 })
 app.post('/save', function(req,res,next) {
     var item = req.body;
@@ -110,6 +81,8 @@ app.post('/save', function(req,res,next) {
         item.id = list.length+1;
         list.push(item);
     }
+    console.log('++++++++++++++++++');
+    console.log(item);
     res.send({code:0,info:"ok",data:item});
 });
 app.delete('/delete/:id',function(req,res,next) {

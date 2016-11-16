@@ -80,12 +80,13 @@
                 dialogTitle: '',
                 params: '',
                 mode: '',
-                hasSubmitted: false
+                hasSubmitted: false,
+                defaultModel:{}
             }
         },
 
         mounted: function() {
-            console.info(this)
+            this.defaultModel = this.extend({},this.model,true);
             this.$on('onInsert', this.onInsert);
             this.$on('onEdit', this.onEdit);
             this.$on('onView', this.onView);
@@ -93,15 +94,10 @@
 
         methods: {
             handleReset: function() {
-
-                if (this.$refs.elForm &&'resetFields' in this.$refs.elForm) {
+                if (this.$refs.elForm && 'resetFields' in this.$refs.elForm) {
                    this.$refs.elForm.resetFields();
                 }
-                // let formModel = {};
-                // for (var i in this.model) {
-                //     formModel[i] = '';
-                // }
-                this.$emit('fillModel', this.model);
+                this.$emit('fillModel', this.defaultModel);
             },
             onInsert: function() {
                 this.hasSubmitted = false;
@@ -116,12 +112,20 @@
                 });
             },
             onEdit: function(params) {
+                if (!params || params.length == 0) {
+                  this.$message.error('请选择行！');
+                  return false;  
+                }
                 this.hasSubmitted = false;
                 this.formDialogShow = true;
                 this.mode = "update";
-                this.params = params;
                 this.handleReset();
-                this.getDataRemote();
+                if (this.actionQuery) {
+                    this.params = params;
+                    this.getDataRemote();
+                }else {
+                    this.$emit('fillModel', this.extend({},params,true));
+                }
                 this.dialogTitle = "修改" + this.title;
                 this.$nextTick(() => {
                     if (this.$el && 'querySelector' in this.$el && this.$el.querySelector('.el-tabs__header') && this.$el.querySelector('.el-tabs__header').style && this.$el.querySelector('.el-tabs__header').style.display != 'none') {
@@ -130,11 +134,19 @@
                 });
             },
             onView: function(params) {
+                if (!params || params.length == 0) {
+                  this.$message.error('请选择行！');
+                  return false;  
+                }
                 this.formDialogShow = true;
                 this.mode = "view";
-                this.params = params;
                 this.handleReset();
-                this.getDataRemote();
+                if (this.actionQuery) {
+                    this.params = params;
+                    this.getDataRemote();
+                }else {
+                    this.$emit('fillModel', this.extend({},params,true));
+                }
                 this.dialogTitle = "查看" + this.title;
                 this.$nextTick(() => {
                     if (this.$el && 'querySelector' in this.$el && this.$el.querySelector('.el-tabs__header') && this.$el.querySelector('.el-tabs__header').style && this.$el.querySelector('.el-tabs__header').style.display == 'none') {
@@ -148,6 +160,7 @@
                         o[p] = n[p];
                     }
                 }
+                return o;
             },
             getDataRemote: function() {
                 var vm = this;
@@ -193,21 +206,12 @@
                             this.$http.post(url, this.model, {emulateJSON: true})
                             .then((res) => {
                                 if (res.status !== 200 || res.body.code !== 0) {
-                                    if (res.body.code == 10107 && this.$auth) {
-                                        this.$alert('用户未登录','提示', {
-                                            type:'error',
-                                            callback: action => {
-                                                vm.$auth.logout(vm);
-                                            }
-                                        });
-                                    } else {
-                                       this.$message({
-                                            showClose: true,
-                                            message: this.dialogTitle + '失败，' + res.body.info,
-                                            type: 'error'
-                                        });
-                                        this.hasSubmitted = false; 
-                                    }  
+                                    this.$message({
+                                        showClose: true,
+                                        message: this.dialogTitle + '失败，' + res.body.info,
+                                        type: 'error'
+                                    });
+                                    this.hasSubmitted = false;   
                                 } else {
                                     this.$message({
                                         showClose: true,

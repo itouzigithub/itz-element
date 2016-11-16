@@ -8,20 +8,19 @@
       :fit="fit"
       :stripe="stripe"
       :border="border"
-      :fixedColumnCount="fixedColumnCount"
-      :selectionMode="selectionMode"
-      :selection="selection"
-      :allowNoSelection="allowNoSelection"
-      :gutterWidth="gutterWidth"
-      :customCriteria="customCriteria"
-      :customBackgroundColors="customBackgroundColors"
-      @selectionchange="handleSelectRow"
+      :row-class-name="rowClassName"
+      :row-key="rowKey"
+      highlight-current-row
+      @current-change="currentChange"
+      @select="select"
+      @select-change="selectChange"
+      @select-all="selectAll"
+      @cell-mouse-enter="cellMouseEnter"
+      @cell-mouse-leave="cellMouseLeave"
+      @cell-click="cellClick"
+      @row-click="rowClick"
+      @sort-change="sortChange"
       ref="elTable">
-      <el-table-column
-        v-if="selectionMode=='multiple'"
-        type="selection"
-        width="50">
-      </el-table-column>
       <slot></slot>
     </el-table>
     <div class="table-loading" v-loading="loading"></div>
@@ -31,8 +30,8 @@
       <el-pagination
         ref="elPagination"
         class="itz-table-el-pagination"
-        @sizechange="handleSizeChange"
-        @currentchange="handleCurrentChange"
+        @size-change="pageSizeChange"
+        @current-change="pageCurrentChange"
         :current-page="queryParams.page"
         :page-sizes="pageSizes"
         :page-size="queryParams.size"
@@ -47,11 +46,6 @@
   import Eltable from 'element-ui/lib/table';
   import Elrow from 'element-ui/lib/row';
   import Elcol from 'element-ui/lib/col';
-  import Elform from 'element-ui/lib/form';
-  import ElFormItem from 'element-ui/lib/form-item';
-  import Elinput from 'element-ui/lib/input';
-  import Elbutton from 'element-ui/lib/button';
-
   export default {
     name: 'itz-table',
 
@@ -96,29 +90,9 @@
         default: false
       },
 
-      fixedColumnCount: {
-        type: Number,
-        default: 0
-      },
+      rowClassName: [String, Function],
 
-      selectionMode: {
-        type: String,
-        default: 'none'
-      },
-
-      selection: {},
-
-      allowNoSelection: {
-        type: Boolean,
-        default: false
-      },
-
-      gutterWidth: {
-        default: 0
-      },
-
-      customCriteria: Array,
-      customBackgroundColors: Array,
+      rowKey: [String, Function],
 
       currentPage: {
         type: Number,
@@ -151,11 +125,7 @@
     components: {
       Eltable,
       Elrow,
-      Elcol,
-      Elform,
-      ElFormItem,
-      Elinput,
-      Elbutton
+      Elcol
     },
 
     data() {
@@ -166,6 +136,7 @@
         tableData: [],
         tableDataTotal: 0,
         rowSelected: [],
+        selection:[],
         queryParams: {
           limit: 10,
           page: 1
@@ -175,7 +146,6 @@
     },
 
     beforeMount() {
-      console.debug('beforeMounted');
       if (this.height) {
         this.tableHeight = this.height;
       } else if (this.maxHeight != 'auto') {
@@ -188,7 +158,6 @@
     },
 
     mounted() {
-      console.debug('mounted');
       window.onresize = () => this.calcTableStyle();
       this.getDataRemote();
       this.$on('onRefresh', this.onRefresh);
@@ -224,17 +193,7 @@
               if (res.status !== 200 || res.body.code !== 0) {
                 this.tableData = [];
                 this.tableDataTotal = 0;
-                if (res.body.code == 10107 && this.$auth) {
-                  let vm  = this;
-                  this.$alert('用户未登录','提示', {
-                    type:'error',
-                    callback: action => {
-                      vm.$auth.logout(vm);
-                    }
-                  });
-                } else {
-                  this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
-                }
+                this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
               } else {
                 this.tableData = res.body.data.listInfo;
                 this.tableDataTotal = res.body.data.listTotal || res.body.data.listInfo.length;
@@ -251,40 +210,64 @@
             });
         }
       },
-      handleSizeChange(newVal) {
-        console.debug('clicked:handleSizeChange', newVal);
+      pageSizeChange(newVal) {
         this.queryParams.page = 1;
         this.queryParams.limit = newVal;
         this.getDataRemote();
       },
-      handleCurrentChange(newVal) {
-        console.debug('clicked:handleCurrentChange', newVal);
+      pageCurrentChange(newVal) {
         this.queryParams.page = newVal;
         this.getDataRemote();
       },
-      handleSelectRow(val) {
-        console.debug('clicked:handleSelectRow', val);
-        this.rowSelected = val;
+      currentChange(row,oldCurrentRow) {
+        this.rowSelected = row;
+        this.$emit('current-change', row, oldCurrentRow);
+      },
+      select(selection,row) {
+        this.selection = selection;
+        this.$emit('select', selection);
+      },
+      selectAll(selection) {
+        this.selection = selection;
+      },
+      selectChange(selection) {
+        this.$emit('selection-change', selection);
+      },
+      cellMouseEnter(row, column, cell, event) {
+        this.$emit('cell-mouse-enter', row, column, cell, event);
+      },
+      cellMouseLeave(row, column, cell, event) {
+        this.$emit('cell-mouse-leave', row, column, cell, event);
+      },
+      cellClick(row, column, cell, event) {
+        this.$emit('cell-click', row, column, cell, event);
+      },
+      rowClick(row, event) {
+        this.$emit('row-click', row, event);
+      },
+      sortChange(o) {
+        this.$emit('sort-change', o);
       },
       onRefresh() {
-        console.debug('emited:onRefresh');
         this.getDataRemote();
       },
       onSearch() {
-        console.debug('clicked:onSearch', this.searchObject);
         this.getDataRemote();
       },
       onDelete() {
         let params;
-        if (this.selectionMode === 'multiple') {
+        if (this.selection.length != 0) {
           params = [];
-          this.rowSelected.map((row) => {
+          this.selection.map((row) => {
             params.push(row.id);
           });
         } else {
           params = this.rowSelected.id;
         }
-        console.debug('clicked:onDelete', params);
+        if (!params || params.length == 0 ) {
+          this.$message.error('请选择要删除的行！');
+          return false;
+        }
         if (this.deleteUrl) {
           if (this.deleteConfirm) {
             this.$confirm('将执行删除操作，是否继续？', '警告', {
@@ -292,7 +275,6 @@
             }).then(() => {
               this.execDelete(params);
             }).catch(() => {
-              console.debug('clicked:onDelete:cancel', params);
             });
           } else {
             this.execDelete(params);
@@ -302,7 +284,6 @@
         }
       },
       execDelete(params) {
-        console.debug('clicked:onDelete:exec', params);
         this.$http.post(this.deleteUrl, { id: params }, {
           emulateJSON: true,
           before(xhr) {
@@ -313,17 +294,7 @@
           }
         }).then((res) => {
           if (res.status !== 200 || res.body.code !== 0) {
-            if (res.body.code == 10107 && this.$auth) {
-              let vm  = this;
-              this.$alert('用户未登录','提示', {
-                type:'error',
-                callback: action => {
-                  vm.$auth.logout(vm);
-                }
-              });
-            } else {
-              this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
-            }
+            this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
           } else {
             if (this.showPagination) {
               this.queryParams.page = 1;
@@ -336,7 +307,6 @@
         });
       },
       calcTableStyle() {
-        console.debug('calcTableStyle:exec');
         if (this.width) {
           let _width;
           if (typeof this.width === 'string' && this.width.indexOf('%') !== -1) {

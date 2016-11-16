@@ -8,9 +8,9 @@
       :delete-confirm="true"
       border
       max-height="auto"
-      selection-mode="single"
       :search-object="searchObject"
       pager-position="center"
+      @current-change="handleChange"
       ref="myTable">
       <el-form slot="options" :inline="true">
         <el-row type="flex" justify="space-between">
@@ -42,6 +42,10 @@
         </el-row>
       </el-form>
       <el-table-column
+        type="selection"
+        width="50">
+      </el-table-column>
+      <el-table-column
         type="index"
         label="序号">
       </el-table-column>
@@ -62,6 +66,29 @@
         label="借款企业">
       </el-table-column>
     </itz-table>
+    <itz-form
+        title="项目"
+        :model="formItem"
+        ref="myForm"
+        actionCreate="http://localhost:8888/save"
+        actionUpdate="http://localhost:8888/save">
+            <itz-form-item display-mode="insert,edit" :current-mode="currentmode" label="ID" label-width="120px" prop="id" style="display:none;">
+               <el-input v-model="formItem.id" placeholder="序号" auto-complete="off" :disabled="true"></el-input>
+            </itz-form-item>
+            <itz-form-item display-mode="insert,edit,view" :current-mode="currentmode" :view-model="formItem.name" label="贷款项目名称：" label-width="120px" prop="name">
+                <el-input v-model="formItem.name" placeholder="请输入贷款项目名称" auto-complete="off"></el-input>
+            </itz-form-item>
+            <itz-form-item display-mode="insert,edit,view" :current-mode="currentmode" :view-model="formItem.type" label="产品类型：" label-width="120px" prop="type">
+                <el-select v-model="formItem.type" placeholder="请选择产品类型">
+                    <el-option label="省心计划（小贷类）A套餐" value="省心计划（小贷类）A套餐"></el-option>
+                    <el-option label="省心计划（典当类）C套餐" value="省心计划（典当类）C套餐"></el-option>
+                    <el-option label="爱担保" value="爱担保"></el-option>
+                </el-select>
+            </itz-form-item>
+            <itz-form-item display-mode="insert,edit,view" :current-mode="currentmode" :view-model="formItem.enterprise" label="借款企业：" label-width="120px"  prop="enterprise">
+                <el-input v-model="formItem.enterprise" placeholder="请输入借款企业" auto-complete="off"></el-input>
+            </itz-form-item>
+        </itz-form>
   </div>
 </template>
 
@@ -73,6 +100,13 @@
           name: '',
           type: ''
         },
+        formItem:{
+          id:-1,
+          name: '',
+          type:'',
+          enterprise:''
+        },
+        currentmode: '',
         typeOptions: [
           {
             label: '担保',
@@ -97,23 +131,40 @@
         ]
       };
     },
+    mounted() {
+        this.$refs.myForm.$on('fillModel', (newModel) => {
+            this.formItem = newModel;
+        })
+        this.$refs.myForm.$on('formSubmit', (newModel) => {
+            this.$refs.myTable.$emit('onRefresh', true);
+        })
+    },
     methods: {
       onSearch() {
         console.debug('onSearch:emit');
         this.$refs.myTable.$emit('onSearch', true);
       },
+      handleChange(row,oldRow) {
+
+      },
       onDelete() {
         console.debug('onDelete:emit');
-        this.$refs.myTable.$emit('onDelete', true);
+        this.$refs.myTable.$emit('onDelete');
       },
       openInsertDialog() {
+        this.currentmode = 'insert';
+        this.$refs.myForm.$emit('onInsert', true);
         console.debug('openInsertDialog:clicked');
       },
       openEditDialog() {
+        this.currentmode = 'edit';
+        this.$refs.myForm.$emit('onEdit', this.$refs.myTable.rowSelected);
         console.debug('openEditDialog:clicked');
       },
       openViewDialog() {
         console.debug('openViewDialog:clicked');
+        this.currentmode = 'view';
+        this.$refs.myForm.$emit('onView', this.$refs.myTable.rowSelected);
       }
     }
   };
