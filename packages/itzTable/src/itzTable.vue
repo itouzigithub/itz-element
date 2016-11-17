@@ -195,8 +195,8 @@
                 this.tableDataTotal = 0;
                 this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
               } else {
-                this.tableData = res.body.data.listInfo;
-                this.tableDataTotal = res.body.data.listTotal || res.body.data.listInfo.length;
+                this.tableData = res.body.data.listInfo || [];
+                this.tableDataTotal = res.body.data.listTotal || this.tableData.length;
                 if (this.tableDataTotal === 0) {
                   this.$message.info('没有符合条件的数据...');
                 }

@@ -65,6 +65,15 @@
         property="enterprise"
         label="借款企业">
       </el-table-column>
+      <el-table-column
+        label="操作"
+        inline-template
+        width="200%">
+        <div>
+          <el-button type="warning" @click.native.prevent="openEditDialog(row)">修改</el-button>
+          <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
+        </div>
+      </el-table-column>
     </itz-table>
     <itz-form
         title="项目"
@@ -156,7 +165,8 @@
         this.$refs.myForm.$emit('onInsert', true);
         console.debug('openInsertDialog:clicked');
       },
-      openEditDialog() {
+      openEditDialog(row) {
+        debugger;
         this.currentmode = 'edit';
         this.$refs.myForm.$emit('onEdit', this.$refs.myTable.rowSelected);
         console.debug('openEditDialog:clicked');
