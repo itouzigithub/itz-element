@@ -56,5 +56,31 @@ npm run dist
 
 ```itz-table``` 提供 name 为 ```options``` 的插槽，可以自定义查询条件元素和各种按钮放入插槽，示例请看 ```example/app.vue```
 
+## itz-form 组件
+
+### itz-form 配置
+|参数|说明|类型|可选值|默认值|
+|---|:---:|:---:|:---:|:---:|
+|action-query|表单查询地址，配置此地址后，编辑和查看的表单会按id从后端查询记录后再显示，如果不配置此地址，会使用当前表格选中的记录|String|-|-|
+|action-create|表单新增地址|String|-|-|
+|action-update|表单修改地址|String|-|-|
+|title|表单显示标题|String|-|-|
+|model|表单数据对象，同el-form|Object|-|-|
+|rules|表单校验规则，同el-form|Object|-|-|
+|dialogSize|表单弹窗大小|String|tiny/small/large/full|tiny|
+|inline|行内表单模式，同el-form|Boolean|-|-|
+
+### itz-form-item 配置
+|参数|说明|类型|可选值|默认值|
+|---|:---:|:---:|:---:|:---:|
+|currentMode|可在哪个模式先显示此行表单项|String|insert,view,edit|insert,view,edit|
+|special|是否自定义查看模式下的显示|String|custom|-|
+|viewModel|查看模式下的数据对象|String\Number|-|-|
+|prop|表单域数据对象|String|-|-|
+|required|是否必填项|Boolean|-|-|
+|label|标签文本|String|-|-|
+|label-width|标签文本宽度，如：‘50px’|String|-|-|
+
+
 # License
 MIT
