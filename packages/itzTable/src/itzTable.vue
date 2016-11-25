@@ -20,6 +20,7 @@
       @cell-click="cellClick"
       @row-click="rowClick"
       @sort-change="sortChange"
+      :context="context"
       ref="elTable">
       <slot></slot>
     </el-table>
@@ -94,6 +95,13 @@
 
       rowKey: [String, Function],
 
+      context: {
+        type: Object,
+        default: function() {
+          return this.$parent;
+        }
+      },
+
       currentPage: {
         type: Number,
         default: 1
@@ -114,7 +122,9 @@
       },
       searchObject: {
         type: Object,
-        default: {}
+        default: function() {
+          return {};
+        }
       },
       showPagination: {
         type: Boolean,
@@ -322,7 +332,8 @@
           let el = this.$refs.elTable.$el;
           let elTableRect = el.getBoundingClientRect();
           let headRect = el.querySelector('.el-table__header').getBoundingClientRect();
-          let bodyRect = el.querySelector('.el-table__body').getBoundingClientRect();
+          let bodyCls = this.tableDataTotal == 0 ? '.el-table__empty-block' : '.el-table__body';
+          let bodyRect = el.querySelector(bodyCls).getBoundingClientRect();
           let elTableHeight = bodyRect.height + headRect.height;
           let elTableHeightWithPager = elTableHeight;
           let _h = 15;// 偏移量

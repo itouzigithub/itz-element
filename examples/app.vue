@@ -70,8 +70,8 @@
         inline-template
         width="200%">
         <div>
-          <el-button type="warning" @click.native.prevent="openEditDialog(row)">修改</el-button>
-          <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
+          <el-button type="warning" @click.native.prevent="openEditDialog(row,$index)">修改</el-button>
+          <el-button type="primary" @click.native.prevent="openViewDialog(row,$index)">查看</el-button>
         </div>
       </el-table-column>
     </itz-table>
@@ -163,18 +163,16 @@
       openInsertDialog() {
         this.currentmode = 'insert';
         this.$refs.myForm.$emit('onInsert', true);
-        console.debug('openInsertDialog:clicked');
       },
-      openEditDialog(row) {
-        debugger;
+      openEditDialog(row,$index) {
+        var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
         this.currentmode = 'edit';
-        this.$refs.myForm.$emit('onEdit', this.$refs.myTable.rowSelected);
-        console.debug('openEditDialog:clicked');
+        this.$refs.myForm.$emit('onEdit', _row);
       },
-      openViewDialog() {
-        console.debug('openViewDialog:clicked');
+      openViewDialog(row,$index) {
+        var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
         this.currentmode = 'view';
-        this.$refs.myForm.$emit('onView', this.$refs.myTable.rowSelected);
+        this.$refs.myForm.$emit('onView', _row);
       }
     }
   };

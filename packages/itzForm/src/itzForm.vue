@@ -169,16 +169,7 @@
                         this.$http.get(this.actionQuery, {params: this.params})
                         .then((res) => {
                             if (res.status !== 200 || res.body.code !== 0) {
-                                if (res.body.code == 10107 && this.$auth) {
-                                    this.$alert('用户未登录','提示', {
-                                        type:'error',
-                                        callback: action => {
-                                            vm.$auth.logout(vm);
-                                        }
-                                    });
-                                } else {
-                                    this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
-                                }
+                                this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
                             } else {
                                 console.debug('onEditInfoUpdate:emit', this, vm)
                                 vm.$emit('fillModel', res.body.data.listInfo);
