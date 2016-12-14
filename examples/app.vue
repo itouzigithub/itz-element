@@ -5,6 +5,7 @@
     <itz-table
       query-url="http://localhost:8888/list"
       delete-url="http://localhost:8888/list/delete"
+      primary-key="id"
       :delete-confirm="true"
       border
       max-height="auto"
@@ -79,6 +80,8 @@
         title="项目"
         :model="formItem"
         ref="myForm"
+        :rules="rules"
+        dialog-size="large"
         actionCreate="http://localhost:8888/save"
         actionUpdate="http://localhost:8888/save">
             <itz-form-item display-mode="insert,edit" :current-mode="currentmode" label="ID" label-width="120px" prop="id" style="display:none;">
@@ -94,10 +97,15 @@
                     <el-option label="爱担保" value="爱担保"></el-option>
                 </el-select>
             </itz-form-item>
+            <itz-form-item display-mode="insert,edit,view" :current-mode="currentmode" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text">
+                <el-input v-model="formItem.text" type="textarea" placeholder="请输入借款企业" auto-complete="off"></el-input>
+            </itz-form-item>
             <itz-form-item display-mode="insert,edit,view" :current-mode="currentmode" :view-model="formItem.enterprise" label="借款企业：" label-width="120px"  prop="enterprise">
-                <el-input v-model="formItem.enterprise" placeholder="请输入借款企业" auto-complete="off"></el-input>
+                <itz-editor v-model="formItem.enterprise"></itz-editor>
+                <div>{{formItem.enterprise}}</div>
             </itz-form-item>
         </itz-form>
+        
   </div>
 </template>
 
@@ -113,7 +121,8 @@
           id:-1,
           name: '',
           type:'',
-          enterprise:''
+          enterprise:'',
+          text:''
         },
         currentmode: '',
         typeOptions: [
@@ -137,7 +146,15 @@
             label: '省心',
             value: '省心'
           }
-        ]
+        ],
+        rules:{
+          enterprise:[
+            {required:true,message:'请输入借款企业',trigger: 'blur'}
+          ],
+          text:[
+            {required:true,message:'请输入借款企业',trigger: 'blur'}
+          ]
+        }
       };
     },
     mounted() {
@@ -165,6 +182,7 @@
         this.$refs.myForm.$emit('onInsert', true);
       },
       openEditDialog(row,$index) {
+        debugger;
         var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
         this.currentmode = 'edit';
         this.$refs.myForm.$emit('onEdit', _row);

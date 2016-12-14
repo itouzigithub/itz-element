@@ -59,6 +59,10 @@
         type: String,
         default: ''
       },
+      primaryKey: { //删除时使用的key
+        type:String,
+        default:'id'
+      },
       deleteConfirm: {
         type: Boolean,
         default: true
@@ -265,14 +269,15 @@
         this.getDataRemote();
       },
       onDelete() {
+        debugger;
         let params;
         if (this.selection.length != 0) {
           params = [];
           this.selection.map((row) => {
-            params.push(row.id);
+            params.push(row[this.primaryKey]);
           });
         } else {
-          params = this.rowSelected.id;
+          params = this.rowSelected[this.primaryKey];
         }
         if (!params || params.length == 0 ) {
           this.$message.error('请选择要删除的行！');
@@ -294,7 +299,9 @@
         }
       },
       execDelete(params) {
-        this.$http.post(this.deleteUrl, { id: params }, {
+        let _params = {};
+        _params[this.primaryKey] = params;
+        this.$http.post(this.deleteUrl, _params, {
           emulateJSON: true,
           before(xhr) {
             if (this.lastRequest) {

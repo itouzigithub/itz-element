@@ -54,7 +54,7 @@
 
             currentMode: String,
 
-            viewModel: [String,Number],
+            viewModel: [String,Number,Date],
 
             special: String,
 
