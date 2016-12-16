@@ -2,6 +2,7 @@ import ItzTable from '../packages/itzTable/index.js';
 import ItzForm from '../packages/itzForm/index.js';
 import ItzFormItem from '../packages/itzFormItem/index.js';
 import ItzEditor from '../packages/itzEditor/index.js';
+import ItzUpload from '../packages/itzUpload/index.js';
 const install = function(Vue) {
   if (install.installed) return;
 
@@ -9,6 +10,7 @@ const install = function(Vue) {
   Vue.component(ItzForm.name, ItzForm);
   Vue.component(ItzFormItem.name, ItzFormItem);
   Vue.component(ItzEditor.name, ItzEditor);
+  Vue.component(ItzUpload.name, ItzUpload);
 };
 // auto install
 if (typeof window !== 'undefined' && window.Vue) {
@@ -21,5 +23,6 @@ module.exports = {
   ItzTable,
   ItzForm,
   ItzFormItem,
-  ItzEditor
+  ItzEditor,
+  ItzUpload
 };

@@ -48,6 +48,28 @@ app.get('/list', function(req,res,next) {
         });
     }, 1000)
 })
+app.get('/find', function(req,res,next) {
+    var _id = req.query.id;
+    console.log(_id);
+    var obj = {};
+    for (var i = 0; i < list.length; i++) {
+        if(list[i].id == _id){
+            console.log(list[i]);
+            obj = list[i];
+            break;
+        }
+    }
+    // console.log(list)
+    setTimeout(function() {
+        res.json({
+            code: 0,
+            info: "ok",
+            data: {
+                listInfo: obj
+            }
+        });
+    }, 1000)
+})
 app.post('/list/delete', function(req, res, next) {
     console.log(req.body, ' And has been deleted rows are:', deleteRowIds)
     if (!(req.body.id instanceof Array) && isNaN(req.body.id)) {

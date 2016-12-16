@@ -1,6 +1,6 @@
 <template>
     <div class="itz-form-item" v-if="isShow" v-bind:style="styleObject">
-        <div v-if="currentMode=='view'">
+        <div v-if="mode=='view'">
             <div class="el-form-item" :class="{
                 'is-required': required
                 }">
@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="currentMode!='view'">
+        <div v-if="mode!='view'">
             <el-form-item
             :label="label"
             :labelWidth="labelWidth"
@@ -38,6 +38,8 @@
     export default {
         name: 'itz-form-item',
 
+        componentName:'itz-form-item',
+
         props: {
 
             label: String,
@@ -50,9 +52,15 @@
 
             rules: [Object, Array],
 
-            displayMode: String,
+            displayMode: {
+                type:String,
+                default:'insert,edit,view'
+            },
 
-            currentMode: String,
+            currentMode: {
+                type:String,
+                default:'insert'
+            },
 
             viewModel: [String,Number,Date],
 
@@ -70,12 +78,15 @@
 
         data() {
             return {
-                
+                mode : this.currentMode
             }
         },
-
-        mounted: function() {
+        beforeMount(){
             
+        },
+
+        mounted() {
+
         },
         beforeUpdate: function() {
             this.calcSelectWidth();
@@ -93,17 +104,16 @@
                     $el.style.width = _width + 'px';
                 })
                 }
-
             }
      
         },
 
         computed: {
             isShow() {
-                return (this.displayMode && this.displayMode.indexOf(this.currentMode) > -1) ? true : false;
+                return (this.displayMode && this.displayMode.indexOf(this.mode) > -1) ? true : false;
             },
             styleObject() {
-                if (this.currentMode == 'view') {
+                if (this.mode == 'view') {
                     return {
                         marginBottom: '-22px'
                     }
@@ -148,6 +158,13 @@
                 } else {
                     return this.viewModel;
                 }
+            },
+            mode(){
+                var parent = this.$parent;
+                while (parent.$options.componentName !== 'itz-form') {
+                    parent = parent.$parent;
+                }
+                return parent.mode || this.currentMode;
             }
         },
 

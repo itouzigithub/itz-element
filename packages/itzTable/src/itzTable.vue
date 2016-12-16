@@ -24,7 +24,7 @@
       ref="elTable">
       <slot></slot>
     </el-table>
-    <div class="table-loading" v-loading="loading"></div>
+    <div class="table-loading" v-loading="loading" element-loading-text="加载中..."></div>
     <el-row type="flex" class="row-bg" :justify="pagerPosition"
       v-if="showPagination"
     >

@@ -1,6 +1,63 @@
+<style type="text/css">
+    .itz-form{
+        /*position: relative;*/
+    }
+    .itz-form-wrapper{
+        padding: 10px 18px 18px 18px;
+        border:1px solid rgb(234, 238, 251); 
+        border-radius: 4px;
+        overflow: auto;
+    }
+    .itz-form-header{
+        height: 30px;
+        line-height: 30px;
+        border-bottom:1px solid rgb(234, 238, 251);
+        margin-bottom: 19px; 
+    }
+    .itz-form-header h4{
+        float: left;
+        margin: 0;
+    }
+    .itz-form-header .back{
+        float: right;
+        margin-right: 20px;
+        font-size: 18px;
+        padding: 6px 0 0 0;
+    }
+</style>
 <template>
     <div class="itz-form">
-        <el-dialog :title="dialogTitle" custom-class="form-dialog" v-model="formDialogShow" :size="dialogSize">
+        <el-dialog 
+            :title="dialogTitle"
+             v-if="!blank" 
+             custom-class="form-dialog" 
+             v-model="formDialogShow" 
+             :size="dialogSize" 
+             :close-on-click-modal="closeOnClickModal" 
+             :top="top">
+            <el-form
+            :model="model"
+            :rules="rules"
+            :type="type"
+            v-loading="loading"
+            element-loading-text="加载中..."
+            :labelPosition="labelPosition"
+            :labelWidth="labelWidth"
+            :labelSuffix="labelSuffix"
+            :inline="inline"
+            ref="elForm"
+            >
+            <slot></slot>
+            </el-form>
+            <span class="dialog-footer" slot="footer" v-if="mode=='insert' || mode=='edit'">
+                <el-button @click.native.prevent="setDataRemote">保存</el-button>
+            </span>
+        </el-dialog>
+        <div class="itz-form-wrapper" v-loading="loading" element-loading-text="加载中..." v-else>
+            <div class="itz-form-header">
+                <h4>{{this.dialogTitle}}</h4>
+                <el-button type="text" class="el-icon-arrow-left back" @click.native.prevent="closeForm">返回</el-button>
+            </div>
             <el-form
             :model="model"
             :rules="rules"
@@ -13,10 +70,8 @@
             >
             <slot></slot>
             </el-form>
-            <span class="dialog-footer" slot="footer" v-if="mode=='create' || mode=='update'">
-                <el-button @click.native.prevent="setDataRemote">保存</el-button>
-            </span>
-        </el-dialog>
+            <el-button @click.native.prevent="setDataRemote" v-if="mode=='insert' || mode=='edit'">保存</el-button>
+        </div>
     </div>
 </template>
 
@@ -24,9 +79,14 @@
 
     import Elform from 'element-ui/lib/form';
     import Elbutton from 'element-ui/lib/button';
+    import emitter from 'element-ui/src/mixins/emitter';
 
     export default {
         name: 'itz-form',
+
+        componentName:'itz-form',
+
+        mixins: [emitter],
 
         props: {
             actionQuery: {
@@ -61,9 +121,25 @@
                 type: String,
                 default: ''
             },
+            blank:{
+                type:Boolean,
+                default:false
+            },
             dialogSize: {
                 type: String,
                 default: 'tiny'
+            },
+            closeOnClickModal:{
+                type:Boolean,
+                default:true
+            },
+            top:{
+                type:String,
+                default:'15%'
+            },
+            currentMode:{
+                type:String,
+                default:'insert'
             },
 
             inline: Boolean
@@ -79,9 +155,22 @@
                 formDialogShow: false,
                 dialogTitle: '',
                 params: '',
-                mode: '',
+                mode: this.currentMode,
                 hasSubmitted: false,
-                defaultModel:{}
+                defaultModel:{},
+                loading:false
+            }
+        },
+        beforeMount() {
+            if (this.blank) {
+                var query = this.$route.query;
+                if (query.mode == 'edit') {
+                    this.onEdit(query);
+                }else if (query.mode == 'view') {
+                    this.onView(query);
+                }else {
+                    this.onInsert();
+                }
             }
         },
 
@@ -103,7 +192,7 @@
                 this.hasSubmitted = false;
                 this.formDialogShow = true;
                 this.handleReset();
-                this.mode = "create";
+                this.changeMode('insert');
                 this.dialogTitle = "新增" + this.title;
                 this.$nextTick(() => {
                     if (this.$el && 'querySelector' in this.$el && this.$el.querySelector('.el-tabs__header') && this.$el.querySelector('.el-tabs__header').style && this.$el.querySelector('.el-tabs__header').style.display != 'none') {
@@ -118,7 +207,7 @@
                 }
                 this.hasSubmitted = false;
                 this.formDialogShow = true;
-                this.mode = "update";
+                this.changeMode('edit');
                 this.handleReset();
                 if (this.actionQuery) {
                     this.params = params;
@@ -132,6 +221,7 @@
                         this.$el.querySelector('.el-tabs__header').style.display='none';
                     }
                 });
+
             },
             onView: function(params) {
                 if (!params || params.length == 0) {
@@ -139,7 +229,7 @@
                   return false;  
                 }
                 this.formDialogShow = true;
-                this.mode = "view";
+                this.changeMode('view');
                 this.handleReset();
                 if (this.actionQuery) {
                     this.params = params;
@@ -164,33 +254,34 @@
             },
             getDataRemote: function() {
                 var vm = this;
-                if (this.mode == 'update' || this.mode == 'view') {
+                if (this.mode == 'edit' || this.mode == 'view') {
                     if (this.actionQuery) {
+                        this.loading = true;
                         this.$http.get(this.actionQuery, {params: this.params})
                         .then((res) => {
+                            this.loading = false;
                             if (res.status !== 200 || res.body.code !== 0) {
                                 this.$message.error((res.body.info || '服务器题了一个问题，正在寻找答案...'));
                             } else {
-                                console.debug('onEditInfoUpdate:emit', this, vm)
                                 vm.$emit('fillModel', res.body.data.listInfo);
                             }
                         }, (res) => {
-                            console.error(res)
+                            this.loading = false;
+                            // console.error(res);
                         });
                     }
                 }
         
-            },
-      
+            },     
             setDataRemote: function() {
                 this.$refs.elForm.validate((valid) => {
-                    if (valid && !this.hasSubmitted) {
+                    if (valid && !this.hasSubmitted && !this.loading) {
                         this.hasSubmitted = true;
                         var vm = this;
                         var url = '';
-                        if (this.mode == 'create') {
+                        if (this.mode == 'insert') {
                             url = this.actionCreate; 
-                        } else if (this.mode == "update") {
+                        } else if (this.mode == "edit") {
                             url = this.actionUpdate;
                         }
                         if (url) {
@@ -210,6 +301,7 @@
                                     });
                                     this.formDialogShow = false;
                                     vm.$emit('formSubmit', true);
+                                    this.closeForm();
                                 }
                             }, (res) => {
                                 console.error(res)
@@ -220,6 +312,14 @@
                         return false;
                     }
                 }); 
+            },
+            changeMode(mode) {
+                this.mode = mode;
+            },
+            closeForm(){
+                if (this.blank) {
+                    this.$router.go(-1);
+                }
             }
      
         },

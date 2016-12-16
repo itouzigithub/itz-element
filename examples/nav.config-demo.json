@@ -1,0 +1,53 @@
+[
+  {
+    "name": "导航一2",
+    "groups": [{
+      "groupName": "分组一22",
+      "list": [
+        {
+          "path": "/demo/demo2",
+          "name": "demo2",
+          "title": "demo2",
+          "description": ""
+        },
+        {
+          "path": "/demo/demo3",
+          "name": "demo3",
+          "title": "demo3",
+          "description": ""
+        }
+      ]
+    }]
+  },
+  {
+    "name": "导航二",
+    "children": [{
+      "path": "/demo/demo",
+      "name": "demo",
+      "hideInSide": false
+    }],
+    "groups": [{
+      "groupName": "nav2",
+      "list": [
+        {
+          "path": "/demo/demo1",
+          "name": "demo1",
+          "title": "",
+          "description": ""
+        }
+      ]
+    }]
+  },
+  {
+    "name": "导航三",
+    "path": "/demo/demo2"
+  },
+  {
+    "name": "返回码管理",
+    "path": "/backcode"
+  },
+  {
+    "name": "返回码管理2",
+    "path": "/backcode2"
+  }
+]

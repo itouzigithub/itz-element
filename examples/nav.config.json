@@ -1,0 +1,10 @@
+[
+  {
+    "name": "示例一",
+    "path": "/page1",
+    "children":[{
+        "name":"form1",
+        "path":"/forms/form1"
+    }]
+  }
+]

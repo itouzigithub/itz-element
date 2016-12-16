@@ -55,7 +55,7 @@
             },
             toolbarFloat:{
                 type:Boolean,
-                default:true
+                default:false
             },
             toolbarFloatOffset:{
                 type:Number,
