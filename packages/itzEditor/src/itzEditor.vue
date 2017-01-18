@@ -23,13 +23,16 @@
 
 <script type="text/babel">
     import Simditor from 'simditor';
-    import emitter from 'element-ui/src/mixins/emitter';
+    import emitter from '../../../src/mixins/emitter';
 
     export default{
         name : 'itz-editor',
         mixins: [emitter],
         props: {
-            value:[String,Number],
+            value:{
+                type:[String,Number],
+                default:''
+            },
             width:{
                 type:String,
                 default:'100%'
@@ -76,7 +79,7 @@
         },
         data() {
             return {
-                editorName: 'editor_' + new Date().getTime(),
+                editorName: 'editor_' + Math.random().toString(10).substr(2),
                 editor:'',
                 currentValue: this.value,
                 upload:{
@@ -85,7 +88,8 @@
                     fileKey:'upload_file',
                     connectionCount: 3,
                     leaveConfirm: '上传正在进行中，确定要离开页面吗？'
-                }
+                },
+                init:true
             }
         },
         computed:{
@@ -134,6 +138,12 @@
             'currentValue'(val) {
                 this.$emit('input', val);
                 this.$emit('change', val);
+                if (this.init) {
+                    setTimeout(()=>{
+                        this.editor.setValue(val);
+                    },0);
+                    this.init = false;
+                }
                 this.dispatch('ElFormItem', 'el.form.change', [val]);
             }
         }

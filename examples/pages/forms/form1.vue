@@ -1,3 +1,14 @@
+<style type="text/css">
+  .el-input,.el-select{
+      width: 360px;
+  }
+  .itz-form .el-form{
+    background-color: #f9fafc;
+    box-sizing: border-box;
+    border: 1px solid #e0e6ed;
+    padding: 10px 15px;
+  }
+</style>
 <template>
   <div>
     <itz-form
@@ -15,10 +26,10 @@
             <itz-form-item display-mode="insert,edit" label="ID" label-width="120px" prop="id" style="display:none;">
                <el-input v-model="formItem.id" placeholder="序号" auto-complete="off" :disabled="true"></el-input>
             </itz-form-item>
-            <itz-form-item display-mode="insert,edit,view" :view-model="formItem.name" label="贷款项目名称：" label-width="120px" prop="name">
+            <itz-form-item display-mode="insert,edit,view"  label="贷款项目名称：" label-width="120px" prop="name">
                 <el-input v-model="formItem.name" placeholder="请输入贷款项目名称" auto-complete="off"></el-input>
             </itz-form-item>
-            <itz-form-item display-mode="insert,edit,view" :view-model="formItem.type" label="产品类型：" label-width="120px" prop="type">
+            <itz-form-item display-mode="insert,edit,view" label="产品类型：" label-width="120px" prop="type">
                 <el-select v-model="formItem.type" placeholder="请选择产品类型">
                     <el-option label="省心计划（小贷类）A套餐" value="省心计划（小贷类）A套餐"></el-option>
                     <el-option label="省心计划（典当类）C套餐" value="省心计划（典当类）C套餐"></el-option>
@@ -28,7 +39,28 @@
             <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text">
                 <el-input v-model="formItem.text" type="textarea" placeholder="请输入借款企业" auto-complete="off"></el-input>
             </itz-form-item>
-            <itz-form-item display-mode="insert,edit,view" :view-model="formItem.enterprise" label="借款企业：" label-width="120px"  prop="enterprise">
+            <itz-form-item label="借款时间：" label-width="120px"  prop="time">
+                <el-date-picker
+                  v-model="formItem.time"
+                  type="date"
+                  format="yyyy/MM/dd"
+                  placeholder="请选择时间">
+                </el-date-picker>
+                <el-input v-model="formItem.time" type="textarea" placeholder="请输入借款时间" auto-complete="off"></el-input>
+            </itz-form-item>
+            <!-- <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text" special='custom'>
+                <itz-upload
+                  action="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0"
+                  :thumbnail-mode="true"
+                  type="drag"
+                  :multiple="false"
+                  v-model="formItem.text"
+                  >
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                </itz-upload>
+            </itz-form-item> -->
+            <itz-form-item label="借款企业：" label-width="120px"  prop="enterprise" special="html">
                 <itz-editor v-model="formItem.enterprise" upload-url="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0&simditor=1"></itz-editor>
             </itz-form-item>
         </itz-form>
@@ -49,7 +81,8 @@
           name: '',
           type:'',
           enterprise:'',
-          text:''
+          text:'',
+          time:''
         },
         currentmode: '',
         typeOptions: [

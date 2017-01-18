@@ -46,7 +46,7 @@ app.get('/list', function(req,res,next) {
                 listInfo: (+req.query.limit ? list.slice((+req.query.page-1) * +req.query.limit).slice(0, +req.query.limit) : list)
             }
         });
-    }, 1000)
+    }, 50)
 })
 app.get('/find', function(req,res,next) {
     var _id = req.query.id;
@@ -68,7 +68,7 @@ app.get('/find', function(req,res,next) {
                 listInfo: obj
             }
         });
-    }, 1000)
+    }, 50)
 })
 app.post('/list/delete', function(req, res, next) {
     console.log(req.body, ' And has been deleted rows are:', deleteRowIds)

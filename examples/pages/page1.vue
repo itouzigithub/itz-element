@@ -10,6 +10,7 @@
       :search-object="searchObject"
       pager-position="center"
       @current-change="handleChange"
+      @selection-change="selectChange"
       ref="myTable">
       <el-form slot="options" :inline="true">
         <el-row type="flex" justify="space-between">
@@ -66,12 +67,11 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        inline-template
         width="200%">
-        <div>
-          <el-button type="warning" @click.native.prevent="openEditDialog(row,$index)">修改</el-button>
-          <el-button type="primary" @click.native.prevent="openViewDialog(row,$index)">查看</el-button>
-        </div>
+        <template scope="scope">
+          <el-button type="warning" @click.native.prevent="openEditDialog(scope.row,scope.$index)">修改</el-button>
+          <el-button type="primary" @click.native.prevent="openViewDialog(scope.row,scope.$index)">查看</el-button>
+      </template>
       </el-table-column>
     </itz-table>
     <itz-form
@@ -81,7 +81,6 @@
         :rules="rules"
         dialog-size="small"
         :close-on-click-modal="false"
-        actionQuery="http://localhost:8888/find"
         actionCreate="http://localhost:8888/save"
         actionUpdate="http://localhost:8888/save">
             <itz-form-item display-mode="insert,edit" label="ID" label-width="120px" prop="id" style="display:none;">
@@ -100,11 +99,7 @@
             <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text">
                 <el-input v-model="formItem.text" type="textarea" placeholder="请输入借款企业" auto-complete="off"></el-input>
             </itz-form-item>
-            <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text">
-                <itz-upload>
-                  
-                </itz-upload>
-            </itz-form-item>
+            
             <itz-form-item display-mode="insert,edit,view" :view-model="formItem.enterprise" label="借款企业：" label-width="120px"  prop="enterprise">
                 <itz-editor v-model="formItem.enterprise" upload-url="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0&simditor=1"></itz-editor>
             </itz-form-item>
@@ -175,6 +170,9 @@
         this.$refs.myTable.$emit('onSearch', true);
       },
       handleChange(row,oldRow) {
+        
+      },
+      selectChange(selection) {
 
       },
       onDelete() {

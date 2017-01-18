@@ -13,7 +13,7 @@
       highlight-current-row
       @current-change="currentChange"
       @select="select"
-      @select-change="selectChange"
+      @selection-change="selectChange"
       @select-all="selectAll"
       @cell-mouse-enter="cellMouseEnter"
       @cell-mouse-leave="cellMouseLeave"
@@ -211,7 +211,7 @@
               } else {
                 this.tableData = res.body.data.listInfo || [];
                 this.tableDataTotal = res.body.data.listTotal || this.tableData.length;
-                if (this.tableDataTotal === 0) {
+                if (this.tableDataTotal === 0 && this.queryParams.page == 1) {
                   this.$message.info('没有符合条件的数据...');
                 }
                 this.$nextTick(() => this.calcTableStyle());
@@ -269,7 +269,6 @@
         this.getDataRemote();
       },
       onDelete() {
-        debugger;
         let params;
         if (this.selection.length != 0) {
           params = [];

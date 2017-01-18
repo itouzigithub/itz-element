@@ -1,17 +1,33 @@
+<style type="text/css">
+    .el-form-item__html p{
+        margin: 0;
+        padding: 0;
+    }
+    .el-form-item__img{
+        padding: 11px 0;
+    }
+    .el-form-item.view{
+        margin-bottom: 0px;
+    }
+</style>
 <template>
-    <div class="itz-form-item" v-if="isShow" v-bind:style="styleObject">
+    <div class="itz-form-item" v-if="isShow">
         <div v-if="mode=='view'">
-            <div class="el-form-item" :class="{
+            <div class="el-form-item view" :class="{
                 'is-required': required
                 }">
                 <label class="el-form-item__label" v-bind:style="labelStyle" v-if="label">
                   {{label + form.labelSuffix}}
                 </label>
                 <div class="el-form-item__content" v-bind:style="contentStyle">
-                <div v-if="special=='custom'">
-                  <slot></slot>
-                </div>
-                <span v-if="special!='custom'">{{afterFormatter}}</span>
+                    <div v-if="special=='custom'">
+                      <slot></slot>
+                    </div>
+                    <div class="el-form-item__html" v-else-if="special == 'html'" v-html="afterFormatter"></div>
+                    <div class="el-form-item__img" v-else-if="special == 'img'">
+                        <img :src="afterFormatter" alt="">
+                    </div>
+                    <span v-else-if="special!='custom'">{{afterFormatter}}</span>
                 </div>
             </div>
         </div>
@@ -112,16 +128,9 @@
             isShow() {
                 return (this.displayMode && this.displayMode.indexOf(this.mode) > -1) ? true : false;
             },
-            styleObject() {
-                if (this.mode == 'view') {
-                    return {
-                        marginBottom: '-22px'
-                    }
-                }
-            },
             form() {
                 var parent = this.$parent;
-                while (parent.$options.componentName !== 'form') {
+                while (parent.$options.componentName !== 'ElForm') {
                     parent = parent.$parent;
                 }
                 return parent;
@@ -145,7 +154,7 @@
             },
             afterFormatter() {
                 if (this.formatter && this.formatterItem) {
-                    let val = this.viewModel;
+                    let val = this.viewModel || this.form.model[this.prop];
                     if (this.formatterItem.indexOf('|') > -1) {
                         let array = this.formatterItem.split('|');
                         for (var i = 0; i < array.length; i++) {
@@ -156,7 +165,7 @@
                     }
                     return val;
                 } else {
-                    return this.viewModel;
+                    return this.viewModel || this.form.model[this.prop];
                 }
             },
             mode(){

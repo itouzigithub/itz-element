@@ -24,6 +24,10 @@
         font-size: 18px;
         padding: 6px 0 0 0;
     }
+    .itz-form .itz-form-button-group{
+        width: 150px;
+        margin: 10px auto;
+    }
 </style>
 <template>
     <div class="itz-form">
@@ -70,7 +74,10 @@
             >
             <slot></slot>
             </el-form>
-            <el-button @click.native.prevent="setDataRemote" v-if="mode=='insert' || mode=='edit'">保存</el-button>
+            <div class="itz-form-button-group">
+                <el-button type="primary" @click.native.prevent="setDataRemote" v-if="mode=='insert' || mode=='edit'">保存</el-button>
+                <el-button type="warning" @click.native.prevent="closeForm" v-if="mode=='insert' || mode=='edit'">取消</el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -79,7 +86,7 @@
 
     import Elform from 'element-ui/lib/form';
     import Elbutton from 'element-ui/lib/button';
-    import emitter from 'element-ui/src/mixins/emitter';
+    import emitter from '../../../src/mixins/emitter';
 
     export default {
         name: 'itz-form',
@@ -267,7 +274,7 @@
                             }
                         }, (res) => {
                             this.loading = false;
-                            // console.error(res);
+                            console.error(res);
                         });
                     }
                 }
