@@ -189,11 +189,17 @@
       getDataRemote() {
         if (this.queryUrl) {
           this.loading = true;
+          let searchObject = {};
+          for(let key in this.searchObject){
+            if (this.searchObject[key] != '') {
+              searchObject[key] = this.searchObject[key];
+            }
+          }
           this.$http.get(this.queryUrl, {
             params: Object.assign(
               {},
               (this.showPagination ? this.queryParams : {}),
-              this.searchObject
+              searchObject
             ),
             before(xhr) {
               if (this.lastRequest) {

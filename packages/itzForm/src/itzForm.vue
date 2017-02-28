@@ -149,6 +149,13 @@
                 default:'insert'
             },
 
+            beforeSubmit:{
+                type:Function,
+                default:function() {
+                    
+                }
+            },
+
             inline: Boolean
         },
 
@@ -292,7 +299,8 @@
                             url = this.actionUpdate;
                         }
                         if (url) {
-                            this.$http.post(url, this.model, {emulateJSON: true})
+                            this.beforeSubmit && this.beforeSubmit(this.model);
+                            this.$http.post(url, this.model)
                             .then((res) => {
                                 if (res.status !== 200 || res.body.code !== 0) {
                                     this.$message({
@@ -311,10 +319,12 @@
                                     this.closeForm();
                                 }
                             }, (res) => {
+                                this.hasSubmitted = false;
                                 console.error(res)
                             });
                         }
                     } else {
+                        this.hasSubmitted = false;
                         console.log('valid false');
                         return false;
                     }
