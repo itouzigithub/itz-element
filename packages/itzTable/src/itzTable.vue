@@ -10,7 +10,7 @@
       :border="border"
       :row-class-name="rowClassName"
       :row-key="rowKey"
-      highlight-current-row
+      :highlight-current-row="highlightCurrentRow"
       @current-change="currentChange"
       @select="select"
       @selection-change="selectChange"
@@ -66,6 +66,10 @@
       deleteConfirm: {
         type: Boolean,
         default: true
+      },
+      highlightCurrentRow:{
+        type:Boolean,
+        default:true
       },
       data: {
         type: Array,
@@ -222,9 +226,11 @@
                 }
                 this.$nextTick(() => this.calcTableStyle());
               }
+              this.$emit('data-change', this.tableData);
             }, (res) => {
               this.loading = false;
               this.tableData = [];
+              this.$emit('data-change', this.tableData);
               this.tableDataTotal = 0;
               this.$message.error('服务器题了一个问题，正在寻找答案...');
             });

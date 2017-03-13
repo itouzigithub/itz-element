@@ -152,7 +152,19 @@
             beforeSubmit:{
                 type:Function,
                 default:function() {
-                    
+                    return true;
+                }
+            },
+            afterSubmit:{
+                type:Function,
+                default:function() {
+                    return true;
+                }
+            },
+            submitError:{
+                type:Function,
+                default:function() {
+                    return true;
                 }
             },
 
@@ -308,7 +320,9 @@
                                         message: this.dialogTitle + '失败，' + res.body.info,
                                         type: 'error'
                                     });
-                                    this.hasSubmitted = false;   
+                                    this.hasSubmitted = false;
+                                    this.submitError && this.submitError(res);
+                                    vm.$emit('submitError', res);
                                 } else {
                                     this.$message({
                                         showClose: true,
@@ -316,10 +330,19 @@
                                     });
                                     this.formDialogShow = false;
                                     vm.$emit('formSubmit', true);
+                                    this.afterSubmit && this.afterSubmit(true);
                                     this.closeForm();
                                 }
                             }, (res) => {
+                                this.submitError && this.submitError(res);
+                                vm.$emit('submitError', res);
                                 this.hasSubmitted = false;
+                                var msg = res.body.info||res.body.msg;
+                                this.$message({
+                                    showClose: true,
+                                    message: this.dialogTitle + '失败，' + msg,
+                                    type: 'error'
+                                });
                                 console.error(res)
                             });
                         }

@@ -75,7 +75,10 @@
               }
             },
             data: Object,
-            multiple: Boolean,
+            multiple: {
+              type: Boolean,
+              default: false
+            },
             name: {
               type: String,
               default: 'file'
@@ -153,7 +156,7 @@
                 this.$refs.elupload.clearFiles();
                 this.$message.error(response.info||'上传失败');
               } else {
-                if (this.currentValue == '' || this.itzThumbnailMode) {
+                if (this.currentValue == '' || !this.multiple || this.itzThumbnailMode) {
                   this.currentValue = response.data.file_src;
                 }else {
                   let values = this.currentValue.split(',');
