@@ -15,6 +15,7 @@ app.all("*", function(req, res, next) {
 
 var jsonData = require('./table.data.json');
 var list = JSON.parse(JSON.stringify(jsonData));
+list = [list[0]];
 var deleteRowIds = [];
 
 app.get('/list', function(req,res,next) {

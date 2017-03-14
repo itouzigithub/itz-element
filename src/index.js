@@ -17,7 +17,7 @@ if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue);
 };
 
-module.exports = {
+export default { //eslint-disable-line no-undef
   version: '1.0.0',
   install: install,
   ItzTable,

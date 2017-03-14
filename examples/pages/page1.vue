@@ -1,8 +1,8 @@
 <template>
   <div>
     <itz-table
-      query-url="http://localhost:8888/list"
-      delete-url="http://localhost:8888/list/delete"
+      query-url="http://10.100.10.31:8888/list"
+      delete-url="http://10.100.10.31:8888/list/delete"
       primary-key="id"
       :delete-confirm="true"
       border
@@ -51,26 +51,56 @@
       </el-table-column>
       <el-table-column
         property="name"
-        label="贷款项目名称">
+        label="贷款项目名称"
+        width="250">
       </el-table-column>
       <el-table-column
         property="type"
-        label="产品类型">
+        label="产品类型"
+        width="250">
       </el-table-column>
       <el-table-column
         property="borrowtype"
-        label="借款模式">
+        label="借款模式"
+        width="250">
       </el-table-column>
       <el-table-column
         property="enterprise"
-        label="借款企业">
+        label="借款企业"
+        width="250">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型"
+        width="250">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型"
+        width="250">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型"
+        width="250">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型"
+        width="250">
+      </el-table-column>
+      <el-table-column
+        property="type"
+        label="产品类型"
+        width="250">
       </el-table-column>
       <el-table-column
         label="操作"
-        width="200%">
+        fixed="right"
+        width="250">
         <template scope="scope">
-          <el-button type="warning" @click.native.prevent="openEditDialog(scope.row,scope.$index)">修改</el-button>
-          <el-button type="primary" @click.native.prevent="openViewDialog(scope.row,scope.$index)">查看</el-button>
+          <el-button type="text" @click.native.prevent="openEditDialog(scope.row,scope.$index)">修改</el-button>
+          <el-button type="text" @click.native.prevent="openViewDialog(scope.row,scope.$index)">查看</el-button>
       </template>
       </el-table-column>
     </itz-table>
@@ -81,8 +111,8 @@
         :rules="rules"
         dialog-size="small"
         :close-on-click-modal="false"
-        actionCreate="http://localhost:8888/save"
-        actionUpdate="http://localhost:8888/save">
+        actionCreate="http://10.100.10.31:8888/save"
+        actionUpdate="http://10.100.10.31:8888/save">
             <itz-form-item display-mode="insert,edit" label="ID" label-width="120px" prop="id" style="display:none;">
                <el-input v-model="formItem.id" placeholder="序号" auto-complete="off" :disabled="true"></el-input>
             </itz-form-item>

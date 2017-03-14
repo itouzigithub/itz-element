@@ -347,12 +347,15 @@
           };
         }
         if (this.maxHeight && this.$refs.elTable) {
+          debugger;
           let el = this.$refs.elTable.$el;
           let elTableRect = el.getBoundingClientRect();
           let headRect = el.querySelector('.el-table__header').getBoundingClientRect();
           let bodyCls = this.tableDataTotal == 0 ? '.el-table__empty-block' : '.el-table__body';
           let bodyRect = el.querySelector(bodyCls).getBoundingClientRect();
-          let elTableHeight = bodyRect.height + headRect.height;
+          let bodyWrapper = el.querySelector('.el-table__body-wrapper');
+          let scrollBarHeight = bodyWrapper.scrollHeight - bodyWrapper.clientHeight;
+          let elTableHeight = bodyRect.height + headRect.height + scrollBarHeight;
           let elTableHeightWithPager = elTableHeight;
           let _h = 15;// 偏移量
           if (this.showPagination) {

@@ -88,8 +88,7 @@
                     fileKey:'upload_file',
                     connectionCount: 3,
                     leaveConfirm: '上传正在进行中，确定要离开页面吗？'
-                },
-                init:true
+                }
             }
         },
         computed:{
@@ -104,6 +103,9 @@
             this.$nextTick(_ => {
               this.createEditor();
             });
+        },
+        updated: function(){
+            console.log(this.value);
         },
         methods: {
             createEditor() {
@@ -121,6 +123,9 @@
                 this.editor.on('valuechanged', function(e,src) {
                     e.preventDefault();
                     _this.currentValue = _this.editor.getValue();
+                    _this.$emit('input', _this.currentValue);
+                    _this.$emit('change', _this.currentValue);
+                    _this.dispatch('ElFormItem', 'el.form.change', [_this.currentValue]);
                 });
                 this.editor.on('blur', function(event) {
                     _this.handleBlur(event);
@@ -133,18 +138,11 @@
         },
         watch: {
             'value'(val, oldValue) {
-                this.currentValue = val;
-            },
-            'currentValue'(val) {
-                this.$emit('input', val);
-                this.$emit('change', val);
-                if (this.init) {
+                if (this.currentValue != val) {
                     setTimeout(()=>{
                         this.editor.setValue(val);
                     },0);
-                    this.init = false;
                 }
-                this.dispatch('ElFormItem', 'el.form.change', [val]);
             }
         }
     }
