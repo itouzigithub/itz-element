@@ -82,7 +82,7 @@
 
             special: String,
 
-            formatter: Object,
+            formatter: [Object,Function],
 
             formatterItem: String
 
@@ -153,8 +153,10 @@
                 return ret;
             },
             afterFormatter() {
-                if (this.formatter && this.formatterItem) {
-                    let val = this.viewModel || this.form.model[this.prop];
+                let val = this.viewModel || this.form.model[this.prop];
+                if (this.formatter && typeof this.formatter == 'function') {
+                    val = this.formatter(val);
+                }else if (this.formatter && this.formatterItem) {
                     if (this.formatterItem.indexOf('|') > -1) {
                         let array = this.formatterItem.split('|');
                         for (var i = 0; i < array.length; i++) {
@@ -163,10 +165,8 @@
                     } else {
                         val = this.formatter[this.formatterItem](val);
                     }
-                    return val;
-                } else {
-                    return this.viewModel || this.form.model[this.prop];
                 }
+                return val;
             },
             mode(){
                 var parent = this.$parent;

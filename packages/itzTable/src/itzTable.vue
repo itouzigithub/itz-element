@@ -10,7 +10,13 @@
       :border="border"
       :row-class-name="rowClassName"
       :row-key="rowKey"
+      :current-row-key="currentRowKey"
+      :row-style="rowStyle"
       :highlight-current-row="highlightCurrentRow"
+      :show-header="showHeader"
+      :empty-text="emptyText"
+      :default-expand-all="defaultExpandAll"
+      :default-sort="defaultSort"
       @current-change="currentChange"
       @select="select"
       @selection-change="selectChange"
@@ -18,8 +24,15 @@
       @cell-mouse-enter="cellMouseEnter"
       @cell-mouse-leave="cellMouseLeave"
       @cell-click="cellClick"
+      @cell-dblclick="cellDblClick"
       @row-click="rowClick"
+      @row-contextmenu="rowContextmenu"
+      @row-dblclick="rowDblClick"
       @sort-change="sortChange"
+      @filter-change="filterChange"
+      @header-click="headerClick"
+      @header-dragend="headerDragend"
+      @expand="expand"
       :context="context"
       ref="elTable">
       <slot></slot>
@@ -100,8 +113,20 @@
       },
 
       rowClassName: [String, Function],
-
       rowKey: [String, Function],
+      currentRowKey:[String,Number],
+      rowStyle:[Function,Object],
+
+      defaultExpandAll:{
+        type:Boolean,
+        default:false
+      },
+      defaultSort:Object,
+
+      emptyText:{
+        type:String,
+        default:'暂无数据'
+      },
 
       context: {
         type: Object,
@@ -133,6 +158,10 @@
         default: function() {
           return {};
         }
+      },
+      showHeader:{
+        type:Boolean,
+        default:true
       },
       showPagination: {
         type: Boolean,
@@ -195,7 +224,7 @@
           this.loading = true;
           let searchObject = {};
           for(let key in this.searchObject){
-            if (this.searchObject[key] != '') {
+            if (this.searchObject[key] !== '') {
               searchObject[key] = this.searchObject[key];
             }
           }
@@ -224,7 +253,9 @@
                 if (this.tableDataTotal === 0 && this.queryParams.page == 1) {
                   this.$message.info('没有符合条件的数据...');
                 }
-                this.$nextTick(() => this.calcTableStyle());
+                if (this.tableDataTotal != 1) {
+                  this.$nextTick(() => this.calcTableStyle());
+                }
               }
               this.$emit('data-change', this.tableData);
             }, (res) => {
@@ -255,6 +286,7 @@
       },
       selectAll(selection) {
         this.selection = selection;
+        this.$emit('select-all', selection);
       },
       selectChange(selection) {
         this.$emit('selection-change', selection);
@@ -268,11 +300,38 @@
       cellClick(row, column, cell, event) {
         this.$emit('cell-click', row, column, cell, event);
       },
-      rowClick(row, event) {
-        this.$emit('row-click', row, event);
+      cellDblClick(row, column, cell, event) {
+        this.$emit('cell-dblclick', row, column, cell, event);
+      },
+      rowClick(row, event, column) {
+        this.$emit('row-click', row, event, column);
+      },
+      rowContextmenu(row, event){
+        this.$emit('row-contextmenu', row, event);
+      },
+      rowDblClick(row, event){
+        this.$emit('row-dblclick', row, event);
+      },
+      headerClick(column, event){
+        this.$emit('header-click', column, event);
+      },
+      headerDragend(newWidth, oldWidth, column, event){
+        this.$emit('header-dragend', newWidth, oldWidth, column, event);
       },
       sortChange(o) {
         this.$emit('sort-change', o);
+      },
+      filterChange(filters){
+        this.$emit('filter-change', filters);
+      },
+      expand(row, expanded){
+        this.$emit('expand', row, expanded);
+      },
+      clearSelection() {
+        this.$refs.elTable.clearSelection();
+      },
+      toggleRowSelection(row, selected) {
+        this.$refs.elTable.toggleRowSelection(row, selected);
       },
       onRefresh() {
         this.getDataRemote();
@@ -347,15 +406,12 @@
           };
         }
         if (this.maxHeight && this.$refs.elTable) {
-          debugger;
           let el = this.$refs.elTable.$el;
           let elTableRect = el.getBoundingClientRect();
           let headRect = el.querySelector('.el-table__header').getBoundingClientRect();
           let bodyCls = this.tableDataTotal == 0 ? '.el-table__empty-block' : '.el-table__body';
           let bodyRect = el.querySelector(bodyCls).getBoundingClientRect();
-          let bodyWrapper = el.querySelector('.el-table__body-wrapper');
-          let scrollBarHeight = bodyWrapper.scrollHeight - bodyWrapper.clientHeight;
-          let elTableHeight = bodyRect.height + headRect.height + scrollBarHeight;
+          let elTableHeight = bodyRect.height + headRect.height;
           let elTableHeightWithPager = elTableHeight;
           let _h = 15;// 偏移量
           if (this.showPagination) {

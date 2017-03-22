@@ -26,7 +26,7 @@
             <itz-form-item display-mode="insert,edit" label="ID" label-width="120px" prop="id" style="display:none;">
                <el-input v-model="formItem.id" placeholder="序号" auto-complete="off" :disabled="true"></el-input>
             </itz-form-item>
-            <itz-form-item display-mode="insert,edit,view"  label="贷款项目名称：" label-width="120px" prop="name">
+            <itz-form-item display-mode="insert,edit,view" :formatter="testFormat"  label="贷款项目名称：" label-width="120px" prop="name">
                 <el-input v-model="formItem.name" placeholder="请输入贷款项目名称" auto-complete="off"></el-input>
             </itz-form-item>
             <itz-form-item display-mode="insert,edit,view" label="产品类型：" label-width="120px" prop="type">
@@ -48,18 +48,15 @@
                 </el-date-picker>
                 <el-input v-model="formItem.time" type="textarea" placeholder="请输入借款时间" auto-complete="off"></el-input>
             </itz-form-item>
-            <!-- <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text" special='custom'>
+            <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text" special='custom'>
                 <itz-upload
                   action="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0"
-                  :thumbnail-mode="true"
-                  type="drag"
                   :multiple="false"
                   v-model="formItem.text"
                   >
                   <el-button size="small" type="primary">点击上传</el-button>
-                  <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
                 </itz-upload>
-            </itz-form-item> -->
+            </itz-form-item>
             <itz-form-item label="借款企业：" label-width="120px"  prop="enterprise" special="html">
                 <itz-editor v-model="formItem.enterprise" upload-url="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0&simditor=1"></itz-editor>
             </itz-form-item>
@@ -123,7 +120,10 @@
         })
     },
     methods: {
-      
+        testFormat(val){
+          debugger;
+          return val + '2222';
+        }
     }
   };
 </script>

@@ -8,8 +8,8 @@ cooking.set({
 
   devServer: {
     port: 8081,
-    hostname:'10.100.10.31',
-    publicPath: 'http://10.100.10.31:8081/'
+    hostname:'localhost',
+    publicPath: 'http://localhost:8081/'
   },
 
   // production

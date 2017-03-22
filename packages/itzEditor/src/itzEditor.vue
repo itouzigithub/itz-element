@@ -105,7 +105,7 @@
             });
         },
         updated: function(){
-            console.log(this.value);
+            
         },
         methods: {
             createEditor() {

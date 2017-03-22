@@ -315,9 +315,10 @@
                             this.$http.post(url, this.model)
                             .then((res) => {
                                 if (res.status !== 200 || res.body.code !== 0) {
+                                    var msg = res.body.info||res.body.msg;
                                     this.$message({
                                         showClose: true,
-                                        message: this.dialogTitle + '失败，' + res.body.info,
+                                        message: this.dialogTitle + '失败，' + msg,
                                         type: 'error'
                                     });
                                     this.hasSubmitted = false;

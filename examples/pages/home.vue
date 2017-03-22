@@ -5,6 +5,7 @@
     bottom: 0;
     left: 200px;
     right: 20px;
+    overflow: auto;
 }
 </style>
 <template>

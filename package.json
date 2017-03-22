@@ -1,6 +1,6 @@
 {
   "name": "itz-element",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "itouzi dashboard ui base on element",
   "main": "lib/itz-dashboard-ui.common.js",
   "files": [
@@ -24,7 +24,7 @@
     "vue-template-compiler":"2.1.6",
     "vue-resource": "^1.0.3",
     "vue-router": "^2.1.1",
-    "element-ui": "1.1.3"
+    "element-ui": "1.2.5"
   },
   "devDependencies": {
     "buble":"^0.14.0",

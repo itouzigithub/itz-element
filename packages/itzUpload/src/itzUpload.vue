@@ -20,16 +20,21 @@
         :multiple="multiple"
         :thumbnail-mode="thumbnail"
         :withCredentials="withCredentials"
-        :showUploadList="showList"
+        :showFileList="showList"
         :accept="accept"
+        :drag="drag"
         :on-preview="previewHander"
         :beforeUpload="beforeUpload"
         :on-remove="removeHander"
         :on-change="onChange"
         :on-success="successHander"
         :on-error="errorHander"
-        :defaultFileList="fileList"
+        :on-progres="onProgres"
+        :list-type="listType"
+        :file-list="fileList"
+        :auto-upload="autoUpload"
         ref="elupload"
+        :http-request="httpRequest"
         :class="{hideCover:mode=='view'}"
         >
         <slot></slot>
@@ -83,10 +88,14 @@
               type: String,
               default: 'file'
             },
+            drag:{
+              type: Boolean,
+              default: false
+            },
             withCredentials: Boolean,
             thumbnailMode: Boolean,
             itzThumbnailMode: Boolean,
-            showUploadList: {
+            showFileList: {
               type: Boolean,
               default: true
             },
@@ -94,6 +103,10 @@
             type: {
               type: String,
               default: 'select'
+            },
+            listType:{
+               type: String,
+              default: 'text'
             },
             beforeUpload: Function,
             onRemove: {
@@ -116,12 +129,15 @@
               type: Function,
               default: noop
             },
-            defaultFileList: {
-              type: Array,
-              default() {
-                return [];
-              }
-            }
+            onProgres:{
+              type: Function,
+              default: noop
+            },
+            autoUpload:{
+              type:Boolean,
+              default:true
+            },
+            httpRequest: Function
         },
 
         components: {
@@ -168,6 +184,9 @@
             },
             errorHander(err, response, file){
                 this.onError(err, response, file);
+            },
+            clearFiles(){
+              this.$refs.elupload.clearFiles();
             }
      
         },
@@ -189,7 +208,7 @@
               return this.itzThumbnailMode ? false : this.thumbnailMode;
             },
             showList(){
-              return this.itzThumbnailMode ? false : this.showUploadList
+              return this.itzThumbnailMode ? false : this.showFileList
             },
             mode(){
                 var parent = this.$parent;
