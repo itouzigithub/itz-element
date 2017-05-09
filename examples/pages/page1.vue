@@ -1,14 +1,15 @@
 <template>
   <div>
     <itz-table
-      query-url="http://10.100.10.31:8888/list"
-      delete-url="http://10.100.10.31:8888/list/delete"
+      query-url="http://localhost:8888/list"
+      delete-url="http://localhost:8888/list/delete"
       primary-key="id"
       :delete-confirm="true"
       border
       max-height="auto"
       :search-object="searchObject"
       pager-position="center"
+      :autoQuery="false"
       @current-change="handleChange"
       @selection-change="selectChange"
       ref="myTable">
@@ -111,8 +112,8 @@
         :rules="rules"
         dialog-size="small"
         :close-on-click-modal="false"
-        actionCreate="http://10.100.10.31:8888/save"
-        actionUpdate="http://10.100.10.31:8888/save">
+        actionCreate="http://localhost:8888/save"
+        actionUpdate="http://localhost:8888/save">
             <itz-form-item display-mode="insert,edit" label="ID" label-width="120px" prop="id" style="display:none;">
                <el-input v-model="formItem.id" placeholder="序号" auto-complete="off" :disabled="true"></el-input>
             </itz-form-item>

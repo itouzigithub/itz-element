@@ -6,5 +6,9 @@
         "name":"form1",
         "path":"/forms/form1"
     }]
+  },
+  {
+    "name": "示例二",
+    "path": "/page2"
   }
 ]

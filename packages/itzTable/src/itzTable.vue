@@ -166,6 +166,10 @@
       showPagination: {
         type: Boolean,
         default: true
+      },
+      autoQuery:{
+        type: Boolean,
+        default: true
       }
     },
 
@@ -206,7 +210,7 @@
 
     mounted() {
       window.onresize = () => this.calcTableStyle();
-      this.getDataRemote();
+      this.autoQuery && this.getDataRemote();
       this.$on('onRefresh', this.onRefresh);
       this.$on('onSearch', this.onSearch);
       this.$on('onDelete', this.onDelete);
@@ -239,7 +243,8 @@
                 this.lastRequest.abort();
               }
               this.lastRequest = xhr;
-            }
+            },
+            timeout:10000
           })
             .then((res) => {
               this.loading = false;
@@ -257,11 +262,11 @@
                   this.$nextTick(() => this.calcTableStyle());
                 }
               }
-              this.$emit('data-change', this.tableData);
+              this.$emit('data-change', this.tableData,this.queryParams.page,this.tableDataTotal);
             }, (res) => {
               this.loading = false;
               this.tableData = [];
-              this.$emit('data-change', this.tableData);
+              this.$emit('data-change', this.tableData,this.queryParams.page,0);
               this.tableDataTotal = 0;
               this.$message.error('服务器题了一个问题，正在寻找答案...');
             });
@@ -282,7 +287,7 @@
       },
       select(selection,row) {
         this.selection = selection;
-        this.$emit('select', selection);
+        this.$emit('select', selection,row);
       },
       selectAll(selection) {
         this.selection = selection;

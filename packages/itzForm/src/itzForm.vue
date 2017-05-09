@@ -60,7 +60,7 @@
         <div class="itz-form-wrapper" v-loading="loading" element-loading-text="加载中..." v-else>
             <div class="itz-form-header">
                 <h4>{{this.dialogTitle}}</h4>
-                <el-button type="text" class="el-icon-arrow-left back" @click.native.prevent="closeForm">返回</el-button>
+                <el-button type="text" class="el-icon-arrow-left back" @click.native.prevent="close">返回</el-button>
             </div>
             <el-form
             :model="model"
@@ -74,10 +74,12 @@
             >
             <slot></slot>
             </el-form>
-            <div class="itz-form-button-group">
-                <el-button type="primary" @click.native.prevent="setDataRemote" v-if="mode=='insert' || mode=='edit'">保存</el-button>
-                <el-button type="warning" @click.native.prevent="closeForm" v-if="mode=='insert' || mode=='edit'">取消</el-button>
-            </div>
+            <slot name="footer" v-if="mode=='insert' || mode=='edit'">
+                <div class="itz-form-button-group">
+                    <el-button type="primary" @click.native.prevent="setDataRemote">保存</el-button>
+                    <el-button type="warning" @click.native.prevent="close">取消</el-button>
+                </div>
+            </slot>
         </div>
     </div>
 </template>
@@ -107,6 +109,10 @@
             },
 
             actionUpdate: {
+                type: String,
+                default: ''
+            },
+            callbackUrl : {
                 type: String,
                 default: ''
             },
@@ -160,6 +166,10 @@
                 default:function() {
                     return true;
                 }
+            },
+            autoClose:{
+                type:Boolean,
+                default: true
             },
             submitError:{
                 type:Function,
@@ -298,7 +308,10 @@
                     }
                 }
         
-            },     
+            },
+            save:function(){
+                this.setDataRemote();
+            },
             setDataRemote: function() {
                 this.$refs.elForm.validate((valid) => {
                     if (valid && !this.hasSubmitted && !this.loading) {
@@ -332,7 +345,7 @@
                                     this.formDialogShow = false;
                                     vm.$emit('formSubmit', true);
                                     this.afterSubmit && this.afterSubmit(true);
-                                    this.closeForm();
+                                    this.autoClose && this.close();
                                 }
                             }, (res) => {
                                 this.submitError && this.submitError(res);
@@ -357,9 +370,13 @@
             changeMode(mode) {
                 this.mode = mode;
             },
-            closeForm(){
+            close(){
                 if (this.blank) {
-                    this.$router.go(-1);
+                    if (this.callbackUrl) {
+                        this.$router.replace(this.callbackUrl);
+                    }else{
+                        this.$router.go(-1);
+                    }
                 }
             }
      
