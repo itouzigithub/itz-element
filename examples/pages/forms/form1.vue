@@ -11,6 +11,7 @@
 </style>
 <template>
   <div>
+    <el-button type="text" @click.native.prevent="resetForm()">修改</el-button>
     <itz-form
         title="项目"
         :model="formItem"
@@ -126,6 +127,9 @@
         })
     },
     methods: {
+        resetForm(){
+          this.$refs.myForm.handleReset();
+        },
         afterSubmit(){
           this.$refs.myForm.close();
           return false;

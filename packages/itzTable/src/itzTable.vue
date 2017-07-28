@@ -243,8 +243,7 @@
                 this.lastRequest.abort();
               }
               this.lastRequest = xhr;
-            },
-            timeout:10000
+            }
           })
             .then((res) => {
               this.loading = false;
