@@ -24,7 +24,8 @@
                 <el-option
                   v-for="op in this.typeOptions"
                   :label="op.label"
-                  :value="op.value">
+                  :value="op.value"
+                  :key="op.value">
                 </el-option>
               </el-select>
             </el-form-item>

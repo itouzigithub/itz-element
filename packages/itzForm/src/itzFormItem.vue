@@ -94,7 +94,7 @@
 
         data() {
             return {
-                mode : this.currentMode
+                
             }
         },
         beforeMount(){
