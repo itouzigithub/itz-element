@@ -6,6 +6,7 @@
       primary-key="id"
       :delete-confirm="true"
       border
+      :page-sizes="pageSizes"
       max-height="auto"
       :search-object="searchObject"
       pager-position="center"
@@ -143,6 +144,7 @@
   export default {
     data() {
       return {
+        pageSizes:[10, 20, 30, 50,100],
         searchObject: {
           name: '',
           type: ''

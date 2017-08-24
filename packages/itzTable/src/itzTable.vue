@@ -267,7 +267,9 @@
               this.tableData = [];
               this.$emit('data-change', this.tableData,this.queryParams.page,0);
               this.tableDataTotal = 0;
-              this.$message.error('服务器题了一个问题，正在寻找答案...');
+              if (res.status != 0) {
+                  this.$message.error('服务器题了一个问题，正在寻找答案...');
+              }
             });
         }
       },
