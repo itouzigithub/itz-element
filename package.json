@@ -1,6 +1,6 @@
 {
   "name": "itz-element",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "itouzi dashboard ui base on element",
   "main": "lib/itz-dashboard-ui.common.js",
   "files": [
