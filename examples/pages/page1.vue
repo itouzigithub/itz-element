@@ -213,8 +213,8 @@
         this.$refs.myTable.$emit('onDelete');
       },
       openInsertDialog() {
-        // this.$refs.myForm.$emit('onInsert', true);
-        this.$router.push({path:'/forms/form1',query:{mode:'insert'}});
+        this.$refs.myForm.$emit('onInsert', true);
+        // this.$router.push({path:'/forms/form1',query:{mode:'insert'}});
       },
       openEditDialog(row,$index) {
         var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
