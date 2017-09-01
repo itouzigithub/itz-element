@@ -35,6 +35,7 @@
         :auto-upload="autoUpload"
         ref="elupload"
         :http-request="httpRequest"
+        :disabled="disabled"
         :class="{hideCover:mode=='view'}"
         >
         <slot></slot>
@@ -137,7 +138,11 @@
               type:Boolean,
               default:true
             },
-            httpRequest: Function
+            httpRequest: Function,
+            disabled: {
+                type: Boolean,
+                default: false
+            }
         },
 
         components: {
@@ -187,6 +192,9 @@
             },
             clearFiles(){
               this.$refs.elupload.clearFiles();
+            },
+            abort(file) {
+              this.$refs.elupload.abort(file);
             }
      
         },
@@ -212,9 +220,15 @@
             },
             mode(){
                 var parent = this.$parent;
+
                 while (parent.$options.componentName !== 'itz-form') {
+
+                    if (typeof parent.$parent == 'undefined') {
+                        break;
+                    }
                     parent = parent.$parent;
                 }
+
                 return parent.mode;
             }
         },

@@ -38,6 +38,8 @@
                 <el-button type="warning" @click.native.prevent="openEditDialog">修改</el-button>
                 <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
                 <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
+                <el-button type="primary" @click="dialogVisible = true">上传</el-button>
+                <el-button type="primary" @click="openInsertDialog">当前页新增</el-button>
               </el-form-item>
             </el-row>
           </el-col>
@@ -131,12 +133,45 @@
             <itz-form-item display-mode="insert,edit,view" :view-model="formItem.text" label="借款企业：" label-width="120px"  prop="text">
                 <el-input v-model="formItem.text" type="textarea" placeholder="请输入借款企业" auto-complete="off"></el-input>
             </itz-form-item>
-            
+
             <itz-form-item display-mode="insert,edit,view" :view-model="formItem.enterprise" label="借款企业：" label-width="120px"  prop="enterprise">
                 <itz-editor v-model="formItem.enterprise" upload-url="http://newuser.itouzi.com/default/common/UploadFile?type=article&water_flag=0&simditor=1"></itz-editor>
             </itz-form-item>
         </itz-form>
-        
+
+        <el-dialog
+            title="提示"
+            :visible="dialogVisible"
+            size="tiny">
+            <itz-upload
+                    class="upload-demo"
+                    drag
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :disabled="disabledUpload"
+                    multiple>
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+            </itz-upload>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <itz-form
+        title="商品信息"
+        id="goodsInfoForm"
+        :model="formItem"
+        ref="typeForm"
+        :inline="true"
+        dialog-size="full"
+        :type="type"
+        actionQuery="/sign/api/lookgoods"
+        actionCreate="/sign/api/AddGoods"
+        actionUpdate="/sign/api/EditGoods">
+            <h2>商品展示信息</h2>
+        </itz-form>
   </div>
 </template>
 
@@ -144,6 +179,7 @@
   export default {
     data() {
       return {
+        type:'',
         pageSizes:[10, 20, 30, 50,100],
         searchObject: {
           name: '',
@@ -186,7 +222,9 @@
           text:[
             {required:true,message:'请输入借款企业',trigger: 'blur'}
           ]
-        }
+        },
+        dialogVisible: false,
+        disabledUpload: true
       };
     },
     mounted() {
@@ -203,7 +241,7 @@
         this.$refs.myTable.$emit('onSearch', true);
       },
       handleChange(row,oldRow) {
-        
+
       },
       selectChange(selection) {
 
@@ -225,6 +263,12 @@
         var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
         // this.$refs.myForm.$emit('onView', _row);
         this.$router.push({path:'/forms/form1',query:{id:_row.id,mode:'view'}});
+      },
+      openInsertDialog() {
+        console.log(111111);
+        console.debug('openInsertDialog:clicked');
+        this.currentmode = 'insert';
+        this.$refs.typeForm.$emit('onInsert', true);
       }
     }
   };

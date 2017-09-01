@@ -17,6 +17,10 @@
       :empty-text="emptyText"
       :default-expand-all="defaultExpandAll"
       :default-sort="defaultSort"
+      :tooltip-effect="tooltipEffect"
+      :show-summary="showSummary"
+      :sum-text="sumText"
+      :summary-method="summaryMethod"
       @current-change="currentChange"
       @select="select"
       @selection-change="selectChange"
@@ -170,7 +174,14 @@
       autoQuery:{
         type: Boolean,
         default: true
-      }
+      },
+      tooltipEffect:String,
+      showSummary:{
+        type: Boolean,
+        default: false
+      },
+      sumText:String,
+      summaryMethod:Function
     },
 
     components: {
@@ -338,6 +349,9 @@
       },
       toggleRowSelection(row, selected) {
         this.$refs.elTable.toggleRowSelection(row, selected);
+      },
+      setCurrentRow(row) {
+        this.$refs.elTable.setCurrentRow(row);
       },
       onRefresh() {
         this.getDataRemote();
