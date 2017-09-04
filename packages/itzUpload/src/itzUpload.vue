@@ -151,9 +151,7 @@
 
         data() {
             return {
-                fileList:[],
-                currentValue:this.value,
-                mode:'insert'
+                currentValue:this.value
             }
         },
 
@@ -229,7 +227,7 @@
                     parent = parent.$parent;
                 }
 
-                return parent.mode;
+                return parent.mode || 'insert';
             }
         },
 
