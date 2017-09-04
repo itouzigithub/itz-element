@@ -15,15 +15,15 @@
 <template>
     <div class="side-nav">
         <el-menu router @open="handleopen">
-            <div v-for="(item, index) in data">
+            <div v-for="(item, index) in data" :key="'el-menu-item_'+index">
                 <el-menu-item v-if="!item.hideInSide && isShow(item.path)" :index="item.path">{{item.name}}</el-menu-item>
                 <el-submenu :index="'sub-'+index.toString()" v-else="item.groups || item.children">
                     <template slot="title">{{item.name}}</template>
-                    <el-menu-item v-for="childItem in item.children" v-if="!childItem.hideInSide && isShow(childItem.path)" :index="childItem.path">
+                    <el-menu-item v-for="(childItem,childIndex) in item.children" :key="'el-menu-childitem_'+childIndex" v-if="!childItem.hideInSide && isShow(childItem.path)" :index="childItem.path">
                         {{childItem.name}}
                     </el-menu-item>
-                    <el-menu-item-group v-for="group in item.groups" :title="group.groupName">
-                        <el-menu-item v-for="navItem in group.list" v-if="!navItem.hideInSide && isShow(navItem.path)" :index="navItem.path">
+                    <el-menu-item-group v-for="(group,groupIndex) in item.groups" :key="'el-menu-group_'+groupIndex" :title="group.groupName">
+                        <el-menu-item v-for="(navItem,navIndex) in group.list" :key="'el-menu-navitem_'+navIndex" v-if="!navItem.hideInSide && isShow(navItem.path)" :index="navItem.path">
                             {{navItem.name}}
                         </el-menu-item>
                     </el-menu-item-group>
