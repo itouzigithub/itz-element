@@ -35,7 +35,7 @@
             :title="dialogTitle"
              v-if="!blank" 
              custom-class="form-dialog" 
-             v-model="formDialogShow" 
+             :visible="formDialogShow"
              :size="dialogSize" 
              :close-on-click-modal="closeOnClickModal" 
              :top="top">
