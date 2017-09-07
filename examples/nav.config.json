@@ -2,6 +2,7 @@
   {
     "name": "示例一",
     "path": "/page1",
+    "iconClass":"el-icon-message",
     "children":[{
         "name":"form1",
         "path":"/forms/form1"
@@ -9,6 +10,15 @@
   },
   {
     "name": "示例二",
-    "path": "/page2"
+    "iconClass":"el-icon-message",
+    "children": [{
+      "path": "/page2",
+      "iconClass":"el-icon-message",
+      "name": "签到规则管理"
+    },{
+      "path": "/page3",
+      "iconClass":"el-icon-message",
+      "name": "签到活动管理管理"
+    }]
   }
 ]

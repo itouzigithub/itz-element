@@ -5,18 +5,16 @@
       delete-url="http://localhost:8888/list/delete"
       primary-key="id"
       :delete-confirm="true"
-      border
       :page-sizes="pageSizes"
       max-height="auto"
       :search-object="searchObject"
       pager-position="center"
-      :autoQuery="false"
       @current-change="handleChange"
       @selection-change="selectChange"
       ref="myTable">
       <el-form slot="options" :inline="true">
         <el-row type="flex" justify="space-between">
-          <el-col :span="12">
+          <el-col :span="18">
             <el-form-item>
               <el-input v-model="searchObject.name" placeholder="贷款项目名称"></el-input>
             </el-form-item>
@@ -31,16 +29,15 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="6">
             <el-row type="flex" justify="end">
               <el-form-item>
                 <el-button type="primary" @click.native.prevent="onSearch">查询</el-button>
                 <el-button type="success" @click.native.prevent="openInsertDialog">新增</el-button>
                 <el-button type="warning" @click.native.prevent="openEditDialog">修改</el-button>
-                <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button>
-                <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
-                <el-button type="primary" @click="dialogVisible = true">上传</el-button>
-                <el-button type="primary" @click="openInsertDialog">当前页新增</el-button>
+                <!-- <el-button type="primary" @click.native.prevent="openViewDialog">查看</el-button> -->
+                <!-- <el-button type="danger" @click.native.prevent="onDelete">删除</el-button>
+                <el-button type="primary" @click="dialogVisible = true">上传</el-button> -->
               </el-form-item>
             </el-row>
           </el-col>
@@ -102,7 +99,7 @@
       <el-table-column
         label="操作"
         fixed="right"
-        width="250">
+        width="160">
         <template scope="scope">
           <el-button type="text" @click.native.prevent="openEditDialog(scope.row,scope.$index)">修改</el-button>
           <el-button type="text" @click.native.prevent="openViewDialog(scope.row,scope.$index)">查看</el-button>
@@ -142,7 +139,7 @@
 
         <el-dialog
             title="提示"
-            :visible="dialogVisible"
+            :v-model="dialogVisible"
             size="tiny">
             <itz-upload
                     class="upload-demo"
@@ -166,7 +163,7 @@
         :model="formItem"
         ref="typeForm"
         :inline="true"
-        dialog-size="full"
+        dialog-size="small"
         :type="type"
         actionQuery="/sign/api/lookgoods"
         actionCreate="/sign/api/AddGoods"

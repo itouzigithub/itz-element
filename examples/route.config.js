@@ -9,9 +9,13 @@ const registerRoute = (config) => {
     }];
 
     function addRoute(page) {
+        if (page.type == 'link') {
+            return false;
+        }
         const component = require('./pages' + page.path + '.vue');
         let child = {
             path: page.path.slice(1),
+            name: page.name,
             meta: {
                 title: page.title || page.name,
                 description: page.description

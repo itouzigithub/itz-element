@@ -9,6 +9,7 @@ import VueRouter from 'vue-router';
 import configRouter from './route.config';
 import mainHeader from './components/header';
 import sideNav from './components/side-nav';
+import breadcrumb from './components/breadcrumb';
 
 Vue.use(VueResource);
 Vue.use(Element);
@@ -16,6 +17,7 @@ Vue.use(itzElement);
 Vue.use(VueRouter);
 Vue.component('main-header', mainHeader);
 Vue.component('side-nav', sideNav);
+Vue.component('itz-breadcrumb', breadcrumb);
 const router = new VueRouter({
     mode: 'hash',
     base: __dirname,

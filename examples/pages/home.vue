@@ -3,7 +3,7 @@
     position: absolute;
     top: 70px;
     bottom: 0;
-    left: 200px;
+    left: 220px;
     right: 20px;
     overflow: auto;
 }
