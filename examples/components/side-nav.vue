@@ -36,6 +36,10 @@
     background-color: red;
     width: 10px;
     height: 30px;
+    transition:1s;
+}
+.transImg {
+    transform: rotate(180deg) scale(1);
 }
 </style>
 <template>
@@ -59,7 +63,7 @@
             </el-menu>
         </div>
         <div class="slip" v-bind:class="{slipshow: !isActive}">
-            <span id="slipSwitch" @click="test"></span>
+            <span id="slipSwitch" v-bind:class="{transImg:isActive}" @click="test"></span>
         </div>
     </div>
 </template>
