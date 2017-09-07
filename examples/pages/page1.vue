@@ -139,7 +139,7 @@
 
         <el-dialog
             title="提示"
-            :v-model="dialogVisible"
+            :visible.sync="dialogVisible"
             size="tiny">
             <itz-upload
                     class="upload-demo"
@@ -156,7 +156,16 @@
                 <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
             </div>
         </el-dialog>
-
+        <el-dialog
+            title="测试弹窗关闭"
+            :visible.sync="dialogTestClose"
+            size="tiny">
+            <h2>测试弹窗关闭</h2>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogTestClose = false">取 消</el-button>
+                <el-button type="primary" @click="dialogTestClose = false">确 定</el-button>
+            </div>
+        </el-dialog>
         <itz-form
         title="商品信息"
         id="goodsInfoForm"
@@ -222,7 +231,8 @@
           ]
         },
         dialogVisible: false,
-        disabledUpload: true
+        disabledUpload: true,
+        dialogTestClose: false
       };
     },
     mounted() {
