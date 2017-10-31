@@ -123,6 +123,30 @@ app.delete('/delete/:id',function(req,res,next) {
         res.status(500).end();
     }
 });
+app.get('/login', function(req,res,next) {
+    setTimeout(function() {
+        res.json({
+            code: 0,
+            info: "ok",
+            data: {
+                data:{
+                    authList:"home"
+                }
+            }
+        });
+    }, 50)
+})
+app.get('/login', function(req,res,next) {
+    setTimeout(function() {
+        res.json({
+            code: 0,
+            info: "ok",
+            data: {
+                
+            }
+        });
+    }, 50)
+})
 
 app.listen(8888, function () { console.log('server is running...'); });
 

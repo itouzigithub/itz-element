@@ -1,12 +1,18 @@
 <style type="text/css">
     .header-wrapper {
+        position: fixed;
+        padding-left: 200px;
         width: 100%;
-        height: 50px;
-        background-color: rgb(32, 160, 255);
+        height: 60px;
+        top: 0;
+        z-index: 100;
+        box-sizing: border-box;
+        display: block;
     }
     .header-wrapper header {
         height: 100%;
         line-height: 50px;
+        background-color: #fff;
     }
     .header-wrapper h1 {
         float: left;
@@ -17,7 +23,7 @@
     .user-content {
         float: right;
         margin-right: 20px;
-        color: #fff;
+        color: #333;
     }
     .user-content li{
         margin-left: 20px;
@@ -27,17 +33,17 @@
     .user-content li a{
         text-decoration: none;
         display: block;
-        color: #fff;
+        color: #333;
         padding: 0 20px;
-        opacity: .8;
+        /*opacity: .8;*/
     }
 </style>
 <template>
     <div class="header-wrapper">
+        <i class="el-icon-fa-hand-o-right"></i>
         <header>
-            <h1>DEMO</h1>
-            <ul class="user-content">
-                <li>Hi,admin</li>
+            <ul class="user-content" v-show="isLigin">
+                <li>Hi,{{username}}</li>
                 <li><a href="#" @click.prevent="logout">退出系统</a></li>
             </ul>
         </header>
@@ -47,11 +53,14 @@
     export default {
         data() {
             return {
-                
+                isLigin : true,
+                username : 'caolong'
             };
         },
         methods: {
             logout() {
+                // Auth.logout(this);
+                // localStorage.clear();
             }
         }
     }

@@ -48,8 +48,6 @@
 
 <script type="text/babel">
 
-    import ElformItem from 'element-ui/lib/form-item';
-
 
     export default {
         name: 'itz-form-item',
@@ -86,10 +84,6 @@
 
             formatterItem: String
 
-        },
-
-        components: {
-            ElformItem
         },
 
         data() {

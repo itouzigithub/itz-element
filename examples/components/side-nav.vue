@@ -1,14 +1,24 @@
 <style type="text/css">
 .side-nav {
-    top: 50px;
+    position: fixed;
+    top: 0;
     left: 0;
-    bottom: 0;
+    z-index: 110;
     width: 200px;
-    z-index: 10;
-    padding-left: 0px;
-    margin-right: 20px;
+    height: 100%;
     overflow: auto;
-    background-color: #eff2f7;
+    background-color: #324157;
+}
+.side-nav .logo-con{
+    height: 44px;
+    padding: 8px;
+    background: #39475a;
+}
+.side-nav h1{
+    color: #fff;
+    font-size: 26px;
+    text-align: center;
+    margin-top: 6px;
 }
 .side-nav .menu-link{
     color:#475669;
@@ -16,43 +26,15 @@
     display:inline-block;
     width:100%;
 }
-.box {
-    position: absolute;
-    width: 190px;
-    height: 100%;
-}
 
-.boxshow {
-    display:none;
-}
-.slip {
-    border-right:10px solid lightgrey;
-    position: absolute;
-    z-index: 20;
-    height: 100%;
-}
-
-.slipshow {
-    margin-left: 190px;
-}
-#slipSwitch {
-    position: absolute;
-    top: 40%;
-    z-index: 20;
-    background: url("https://admin.itouzi.com/images/dataSystem/sliderOp.png") no-repeat;
-    background-color: red;
-    width: 10px;
-    height: 30px;
-    transition:1s;
-}
-.transImg {
-    transform: rotate(180deg) scale(1);
-}
 </style>
 <template>
     <div class="side-nav">
+        <div class="logo-con">
+            <h1>内容管理系统</h1>
+        </div>
         <div>
-            <el-menu router @open="handleopen" v-bind:class="{boxshow: isActive}" class="box">
+            <el-menu router @open="handleopen" theme="dark">
                 <template v-for="(item, index) in data">
                     <el-menu-item v-if="item.type == 'link'" :index="'el-menu-link-'+index">
                         <i :class="item.iconClass"></i><a :href="item.path" target="_blank" class="menu-link">{{item.name}}</a>
@@ -75,9 +57,6 @@
                     </el-submenu>
                 </template>
             </el-menu>
-        </div>
-        <div class="slip" v-bind:class="{slipshow: !isActive}">
-            <span id="slipSwitch" v-bind:class="{transImg:isActive}" @click="test"></span>
         </div>
     </div>
 </template>
@@ -102,15 +81,6 @@ export default {
             return path ? true : false;
         },
         handleopen : function(index,indexpath) {
-        },
-        test() {
-            this.isCollapse = !this.isCollapse;
-            if (this.isCollapse) {
-                this.isActive = true;
-            } else {
-                this.isActive = false;
-            }
-            this.$emit('listen', this.isActive);
         }
     }
 }

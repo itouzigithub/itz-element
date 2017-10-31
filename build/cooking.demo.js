@@ -29,4 +29,9 @@ cooking.set({
   extends: ['vue2', 'buble']
 });
 
-module.exports = cooking.resolve();
+var config = cooking.resolve();
+// config.resolve.extensions.push('.less');
+
+// console.log(JSON.stringify(config));
+
+module.exports = config;

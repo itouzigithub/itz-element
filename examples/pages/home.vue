@@ -1,24 +1,23 @@
-<style type="text/css">
+<style lang="less">
 .main-wrapper {
-    position: absolute;
-    top: 70px;
-    bottom: 0;
-    right: 20px;
-    left: 30px;
+    box-sizing: border-box;
+    padding: 60px 0 10px 200px;
+    background-color: #f0f0f0;
+    z-index: -1;
     overflow: auto;
+    .content{
+        margin: 10px;
+    }
 }
-
-.autoleft {
-    left: 220px;
-}
-
 </style>
 <template>
     <div>
+        <side-nav :data="navsData"></side-nav>
         <main-header></main-header>
-        <side-nav :data="navsData" v-on:listen="getListenValue"></side-nav>
-        <div class="main-wrapper" v-bind:class="{autoleft: isActive}">
-            <router-view class="content"></router-view>
+        <div class="main-wrapper">
+            <el-card class="content">
+                <router-view></router-view>
+            </el-card>
         </div>
     </div>
 </template>
@@ -32,14 +31,7 @@ export default {
         };
     },
     methods: {
-        getListenValue:function (data) {
-                            console.log(data);
-                           if (data) {
-                               this.isActive = false;
-                           } else {
-                               this.isActive = true;
-                           }
-                        }
+        
     }
 }
 </script>

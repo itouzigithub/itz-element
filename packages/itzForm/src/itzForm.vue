@@ -86,8 +86,6 @@
 
 <script type="text/babel">
 
-    import Elform from 'element-ui/lib/form';
-    import Elbutton from 'element-ui/lib/button';
     import emitter from '../../../src/mixins/emitter';
 
     export default {
@@ -179,11 +177,6 @@
             },
 
             inline: Boolean
-        },
-
-        components: {
-            Elform,
-            Elbutton
         },
 
         data() {

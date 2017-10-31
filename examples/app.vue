@@ -5,6 +5,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
+    background: #f0f0f0;
 }
 
 h1,
@@ -20,6 +21,7 @@ ul li {
 #app {
     height: 100%;
     position: relative;
+    background: #f0f0f0;
 }
 .el-select-dropdown {
     z-index: 10000!important;

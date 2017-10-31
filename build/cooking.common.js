@@ -1,5 +1,7 @@
 var cooking = require('cooking');
 var config = require('./config');
+const fs = require('fs');
+const path = require('path');
 
 cooking.set({
   entry: './src/index.js',
@@ -14,4 +16,7 @@ cooking.set({
 
 cooking.add('output.filename', 'itz-dashboard-ui.common.js');
 
+fs.writeFile(__dirname+'/con1.log', JSON.stringify(cooking.resolve()), (error) => {
+  console.log(error);
+});
 module.exports = cooking.resolve();

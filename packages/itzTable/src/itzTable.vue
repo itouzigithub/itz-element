@@ -61,9 +61,6 @@
 </template>
 
 <script type="text/babel">
-  import Eltable from 'element-ui/lib/table';
-  import Elrow from 'element-ui/lib/row';
-  import Elcol from 'element-ui/lib/col';
   export default {
     name: 'itz-table',
 
@@ -182,12 +179,6 @@
       },
       sumText:String,
       summaryMethod:Function
-    },
-
-    components: {
-      Eltable,
-      Elrow,
-      Elcol
     },
 
     data() {

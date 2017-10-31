@@ -100,7 +100,7 @@
         label="操作"
         fixed="right"
         width="160">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button type="text" @click.native.prevent="openEditDialog(scope.row,scope.$index)">修改</el-button>
           <el-button type="text" @click.native.prevent="openViewDialog(scope.row,scope.$index)">查看</el-button>
       </template>

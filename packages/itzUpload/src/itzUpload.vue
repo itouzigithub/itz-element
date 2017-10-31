@@ -47,7 +47,6 @@
 
 <script type="text/babel">
 
-    import ElUpload from 'element-ui/lib/upload';
     import emitter from '../../../src/mixins/emitter';
 
     function noop() {
@@ -143,10 +142,6 @@
                 type: Boolean,
                 default: false
             }
-        },
-
-        components: {
-            ElUpload
         },
 
         data() {
