@@ -1,4 +1,4 @@
-<style type="text/css">
+<style lang="less">
     .header-wrapper {
         position: fixed;
         padding-left: 200px;
@@ -13,6 +13,33 @@
         height: 100%;
         line-height: 50px;
         background-color: #fff;
+        position: relative;
+        .nav-con{
+            margin: 6px;
+            display: inline-block;
+            &-button{
+                padding: 6px 10px;
+                .el-icon-fa-bars{
+                    font-size: 25px!important;
+                }
+            }
+        }
+        .header-middle-con{
+            position: absolute;
+            left: 60px;
+            top: 0;
+            right: 340px;
+            bottom: 0;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .header-avator-con{
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 300px;
+        }
     }
     .header-wrapper h1 {
         float: left;
@@ -40,12 +67,20 @@
 </style>
 <template>
     <div class="header-wrapper">
-        <i class="el-icon-fa-hand-o-right"></i>
         <header>
-            <ul class="user-content" v-show="isLigin">
+            <div class="nav-con">
+                <el-button :style="{transform: 'rotateZ(' + (this.hideMenuText ? '-90' : '0') + 'deg)'}" class="nav-con-button" type="text" icon="fa-bars"></el-button>
+            </div>
+            <div class="header-middle-con">
+                
+            </div>
+            <div class="header-avator-con">
+                
+            </div>
+            <!-- <ul class="user-content" v-show="isLogin">
                 <li>Hi,{{username}}</li>
                 <li><a href="#" @click.prevent="logout">退出系统</a></li>
-            </ul>
+            </ul> -->
         </header>
     </div>
 </template>
@@ -53,7 +88,8 @@
     export default {
         data() {
             return {
-                isLigin : true,
+                hideMenuText:false,
+                isLogin : true,
                 username : 'caolong'
             };
         },

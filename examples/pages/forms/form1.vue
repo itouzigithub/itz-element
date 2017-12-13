@@ -1,7 +1,7 @@
 <style type="text/css">
-  .el-input,.el-select{
+  /*.el-input,.el-select{
       width: 360px;
-  }
+  }*/
   .itz-form .el-form{
     background-color: #f9fafc;
     box-sizing: border-box;

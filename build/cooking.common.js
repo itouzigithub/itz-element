@@ -16,7 +16,17 @@ cooking.set({
 
 cooking.add('output.filename', 'itz-dashboard-ui.common.js');
 
-fs.writeFile(__dirname+'/con1.log', JSON.stringify(cooking.resolve()), (error) => {
+var config = cooking.resolve();
+
+var json = JSON.stringify(config,function(key,value) {
+    if (key == 'test') {
+        return value.toString();
+    }else {
+        return value;
+    }
+})
+
+fs.writeFile(__dirname+'/con1.json', json, (error) => {
   console.log(error);
 });
-module.exports = cooking.resolve();
+module.exports = config;

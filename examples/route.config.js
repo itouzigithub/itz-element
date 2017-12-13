@@ -4,6 +4,7 @@ import navConfig from './nav.config.json';
 const registerRoute = (config) => {
     let route = [{
         path: '/',
+        name: '首页',
         component: require('./pages/home.vue'),
         children: []
     }];

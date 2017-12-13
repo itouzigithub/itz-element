@@ -4,20 +4,20 @@
     "path": "/page1",
     "iconClass":"el-icon-message",
     "children":[{
-        "name":"form1",
-        "path":"/forms/form1"
+        "name":"问题",
+        "path":"/forms/form2"
     }]
   },
   {
     "name": "示例二",
-    "iconClass":"el-icon-message",
+    "iconClass":"el-icon-fa-tags",
     "children": [{
       "path": "/page2",
-      "iconClass":"el-icon-message",
+      "iconClass":"el-icon-fa-bar-chart",
       "name": "签到规则管理"
     },{
       "path": "/page3",
-      "iconClass":"el-icon-message",
+      "iconClass":"el-icon-fa-bookmark",
       "name": "签到活动管理管理"
     }]
   }

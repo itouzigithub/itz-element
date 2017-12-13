@@ -1,5 +1,7 @@
 var cooking = require('cooking');
 var config = require('./config');
+const fs = require('fs');
+const path = require('path');
 
 cooking.set({
   entry: './examples/entry.js',
@@ -29,9 +31,22 @@ cooking.set({
   extends: ['vue2', 'buble']
 });
 
-var config = cooking.resolve();
-// config.resolve.extensions.push('.less');
+cooking.add('loader.less', {
+  test: /\.less$/,
+  loaders: ['less-loader']
+})
 
-// console.log(JSON.stringify(config));
+var conf = cooking.resolve();
+conf.resolve.extensions.push('.less');
 
-module.exports = config;
+var json = JSON.stringify(conf,function(key,value) {
+    if (key == 'test') {
+        return value.toString();
+    }else {
+        return value;
+    }
+})
+fs.writeFile(__dirname+'/conDemo.json', json, (error) => {
+  console.log(error);
+});
+module.exports = conf;

@@ -260,7 +260,7 @@
       },
       openInsertDialog() {
         // this.$refs.myForm.$emit('onInsert', true);
-        this.$router.push({path:'/forms/form1',query:{mode:'insert'}});
+        this.$router.push({path:'/forms/form2',query:{mode:'insert'}});
       },
       openEditDialog(row,$index) {
         var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
@@ -271,13 +271,13 @@
         var _row = $index != undefined ? row : this.$refs.myTable.rowSelected;
         // this.$refs.myForm.$emit('onView', _row);
         this.$router.push({path:'/forms/form1',query:{id:_row.id,mode:'view'}});
-      },
-      openInsertDialog() {
-        console.log(111111);
-        console.debug('openInsertDialog:clicked');
-        this.currentmode = 'insert';
-        this.$refs.typeForm.$emit('onInsert', true);
       }
+      // openInsertDialog() {
+      //   console.log(111111);
+      //   console.debug('openInsertDialog:clicked');
+      //   this.currentmode = 'insert';
+      //   this.$refs.typeForm.$emit('onInsert', true);
+      // }
     }
   };
 </script>
